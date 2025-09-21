@@ -4,7 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { XPProgressBar } from "@/components/Gamification/XPProgressBar";
+import { ImpactTree } from "@/components/Gamification/ImpactTree";
+import { MilestoneTracker } from "@/components/Gamification/MilestoneTracker";
 import { StreakCounter } from "@/components/Gamification/StreakCounter";
 import { BadgeGallery } from "@/components/Gamification/BadgeGallery";
 import { Edit, Calendar, Clock, Star, Award } from "lucide-react";
@@ -64,6 +65,49 @@ const eventHistory = [
     status: "Joined",
     points: 250,
     category: "Environment"
+  }
+];
+
+const milestones = [
+  { 
+    id: "1", 
+    title: "First Steps", 
+    description: "events joined", 
+    progress: 5, 
+    target: 5, 
+    completed: true, 
+    icon: "🎯", 
+    category: "participation" 
+  },
+  { 
+    id: "2", 
+    title: "Team Player", 
+    description: "collaborations", 
+    progress: 2, 
+    target: 10, 
+    completed: false, 
+    icon: "🤝", 
+    category: "collaboration" 
+  },
+  { 
+    id: "3", 
+    title: "Green Champion", 
+    description: "environmental events", 
+    progress: 7, 
+    target: 10, 
+    completed: false, 
+    icon: "🌱", 
+    category: "environment" 
+  },
+  { 
+    id: "4", 
+    title: "Innovator", 
+    description: "proposals adopted", 
+    progress: 1, 
+    target: 3, 
+    completed: false, 
+    icon: "💡", 
+    category: "innovation" 
   }
 ];
 
@@ -135,14 +179,13 @@ const Profile = () => {
         {/* Stats Overview */}
         <div className="grid grid-cols-2 gap-4">
           <Card className="p-4 card-civic">
-            <XPProgressBar 
-              currentXP={user.currentXP}
-              nextLevelXP={user.nextLevelXP}
+            <ImpactTree 
+              impactPoints={user.currentXP}
               level={user.level}
             />
           </Card>
           <Card className="p-4 card-civic">
-            <StreakCounter streakCount={user.streakCount} />
+            <MilestoneTracker milestones={milestones} />
           </Card>
         </div>
 
@@ -173,7 +216,7 @@ const Profile = () => {
         <Tabs defaultValue="badges" className="space-y-4">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="badges">Badges</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
+            <TabsTrigger value="my-events">My Events</TabsTrigger>
             <TabsTrigger value="proposals">Proposals</TabsTrigger>
           </TabsList>
 
@@ -183,34 +226,61 @@ const Profile = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="history" className="space-y-4">
-            <h3 className="text-lg font-heading font-semibold">Event History</h3>
-            <div className="space-y-3">
-              {eventHistory.map((event) => (
-                <Card key={event.id} className="p-4 card-civic">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <div className="font-medium text-foreground">{event.title}</div>
-                        <div className="text-sm text-muted-foreground">{event.date}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge className={getStatusColor(event.status)}>
-                        {event.status}
-                      </Badge>
-                      {event.status === "Completed" && (
-                        <div className="flex items-center text-sm text-accent">
-                          <Star className="h-3 w-3 mr-1" />
-                          {event.points} XP
+          <TabsContent value="my-events" className="space-y-4">
+            <Tabs defaultValue="upcoming" className="space-y-3">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+                <TabsTrigger value="past">Past Events</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="upcoming">
+                <div className="space-y-3">
+                  {eventHistory.filter(event => event.status === "Upcoming" || event.status === "Joined").map((event) => (
+                    <Card key={event.id} className="p-4 card-civic">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Calendar className="h-4 w-4 text-primary" />
+                          <div>
+                            <div className="font-medium text-foreground">{event.title}</div>
+                            <div className="text-sm text-muted-foreground">{event.date}</div>
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+                        <Badge className={getStatusColor(event.status)}>
+                          {event.status}
+                        </Badge>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="past">
+                <div className="space-y-3">
+                  {eventHistory.filter(event => event.status === "Completed").map((event) => (
+                    <Card key={event.id} className="p-4 card-civic">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <div className="font-medium text-foreground">{event.title}</div>
+                            <div className="text-sm text-muted-foreground">{event.date}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Badge className={getStatusColor(event.status)}>
+                            {event.status}
+                          </Badge>
+                          <div className="flex items-center text-sm text-accent">
+                            <Star className="h-3 w-3 mr-1" />
+                            {event.points} pts
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           <TabsContent value="proposals" className="space-y-4">

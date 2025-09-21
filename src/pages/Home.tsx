@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/Layout/AppLayout";
-import { XPProgressBar } from "@/components/Gamification/XPProgressBar";
-import { StreakCounter } from "@/components/Gamification/StreakCounter";
+import { ImpactTree } from "@/components/Gamification/ImpactTree";
+import { MilestoneTracker } from "@/components/Gamification/MilestoneTracker";
 import { BadgeGallery } from "@/components/Gamification/BadgeGallery";
 import { EventCard } from "@/components/Events/EventCard";
 import { Button } from "@/components/ui/button";
@@ -55,6 +55,29 @@ const featuredEvents = [
   }
 ];
 
+const mockMilestones = [
+  { 
+    id: "1", 
+    title: "First Steps", 
+    description: "events joined", 
+    progress: 3, 
+    target: 5, 
+    completed: false, 
+    icon: "🎯", 
+    category: "participation" 
+  },
+  { 
+    id: "2", 
+    title: "Green Champion", 
+    description: "environmental events", 
+    progress: 2, 
+    target: 5, 
+    completed: false, 
+    icon: "🌱", 
+    category: "environment" 
+  }
+];
+
 const leaderboard = [
   { rank: 1, name: "Maria Santos", points: 2850, avatar: "🌟" },
   { rank: 2, name: "David Kim", points: 2420, avatar: "🚀" },
@@ -102,14 +125,13 @@ const Home = () => {
         {/* Gamification Dashboard */}
         <section className="grid grid-cols-2 gap-4">
           <Card className="p-4 card-civic">
-            <XPProgressBar 
-              currentXP={mockUser.currentXP}
-              nextLevelXP={mockUser.nextLevelXP}
+            <ImpactTree 
+              impactPoints={mockUser.currentXP}
               level={mockUser.level}
             />
           </Card>
           <Card className="p-4 card-civic">
-            <StreakCounter streakCount={mockUser.streakCount} />
+            <MilestoneTracker milestones={mockMilestones} />
           </Card>
         </section>
 
