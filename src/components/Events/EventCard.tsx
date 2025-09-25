@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tag } from "@/components/ui/tag";
 import { Calendar, MapPin, Users, Star } from "lucide-react";
 import communityEventImage from "@/assets/community-event.jpg";
 
@@ -16,6 +17,10 @@ interface EventCardProps {
     maxParticipants: number;
     rewardPoints: number;
     imageUrl?: string;
+    tags?: Array<{
+      label: string;
+      variant?: "default" | "activity" | "skill" | "location";
+    }>;
   };
   onJoin?: (eventId: string) => void;
 }
@@ -71,6 +76,17 @@ export const EventCard = ({ event, onJoin }: EventCardProps) => {
             <span>{event.participants} / {event.maxParticipants} participants</span>
           </div>
         </div>
+
+        {/* Event Tags (under participants) */}
+        {event.tags && event.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {event.tags.map((tag, index) => (
+              <Tag key={index} variant={tag.variant || "default"}>
+                {tag.label}
+              </Tag>
+            ))}
+          </div>
+        )}
 
         {/* Organizer & Action */}
         <div className="flex items-center justify-between pt-2">
