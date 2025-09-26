@@ -1,14 +1,15 @@
 import { ReactNode } from "react";
-import { BottomNavigation } from "./BottomNavigation";
-import { Search, Bell } from "lucide-react";
+import { NGOBottomNavigation } from "./NGOBottomNavigation";
+import { Search, Bell, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-interface AppLayoutProps {
+interface NGOLayoutProps {
   children: ReactNode;
   title?: string;
 }
 
-export const AppLayout = ({ children, title }: AppLayoutProps) => {
+export const NGOLayout = ({ children, title }: NGOLayoutProps) => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -20,15 +21,21 @@ export const AppLayout = ({ children, title }: AppLayoutProps) => {
             ) : (
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 rounded-lg gradient-civic flex items-center justify-center">
-                  <span className="text-white font-heading font-bold text-sm">C</span>
+                  <span className="text-white font-heading font-bold text-sm">N</span>
                 </div>
-                <span className="font-heading font-bold text-primary">CivicConnect</span>
+                <div className="flex flex-col">
+                  <span className="font-heading font-bold text-primary text-sm">NGO Portal</span>
+                  <Badge variant="secondary" className="text-xs w-fit">Organization</Badge>
+                </div>
               </div>
             )}
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="icon">
               <Search className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <QrCode className="h-5 w-5" />
             </Button>
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
@@ -44,7 +51,7 @@ export const AppLayout = ({ children, title }: AppLayoutProps) => {
       </main>
 
       {/* Bottom Navigation */}
-      <BottomNavigation />
+      <NGOBottomNavigation />
     </div>
   );
 };

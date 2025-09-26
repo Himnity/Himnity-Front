@@ -3,7 +3,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Crown, TrendingUp, Award, Users } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Crown, TrendingUp, Award, Users, MapPin, Calendar } from "lucide-react";
+import { useState } from "react";
 
 // Mock leaderboard data
 const individualLeaders = [
@@ -114,6 +116,11 @@ const champions = [
 ];
 
 const HallOfFame = () => {
+  const [individualTimeFilter, setIndividualTimeFilter] = useState("this-month");
+  const [individualRegionFilter, setIndividualRegionFilter] = useState("all");
+  const [ngoTimeFilter, setNgoTimeFilter] = useState("all-time");
+  const [ngoRegionFilter, setNgoRegionFilter] = useState("all");
+
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1: return <Crown className="h-5 w-5 text-yellow-500" />;
@@ -123,8 +130,18 @@ const HallOfFame = () => {
     }
   };
 
+  const getTimeFilterLabel = (filter: string) => {
+    const labels = {
+      "this-week": "This Week",
+      "this-month": "This Month", 
+      "this-year": "This Year",
+      "all-time": "All Time"
+    };
+    return labels[filter as keyof typeof labels] || filter;
+  };
+
   return (
-    <AppLayout title="Hall of Fame" showFab={false}>
+    <AppLayout title="Hall of Fame">
       <div className="space-y-6 p-4">
         {/* Champions Section */}
         <section className="space-y-4">
@@ -159,10 +176,41 @@ const HallOfFame = () => {
               <h3 className="text-lg font-heading font-semibold">
                 Top Individual Contributors
               </h3>
-              <Badge variant="outline">
-                <TrendingUp className="h-3 w-3 mr-1" />
-                This Month
-              </Badge>
+            </div>
+
+            {/* Filters for Individuals */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex items-center space-x-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <Select value={individualTimeFilter} onValueChange={setIndividualTimeFilter}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="this-week">This Week</SelectItem>
+                    <SelectItem value="this-month">This Month</SelectItem>
+                    <SelectItem value="this-year">This Year</SelectItem>
+                    <SelectItem value="all-time">All Time</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <Select value={individualRegionFilter} onValueChange={setIndividualRegionFilter}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Regions</SelectItem>
+                    <SelectItem value="north">North Region</SelectItem>
+                    <SelectItem value="south">South Region</SelectItem>
+                    <SelectItem value="east">East Region</SelectItem>
+                    <SelectItem value="west">West Region</SelectItem>
+                    <SelectItem value="central">Central Region</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="space-y-3">
@@ -209,10 +257,41 @@ const HallOfFame = () => {
               <h3 className="text-lg font-heading font-semibold">
                 Top Organizations
               </h3>
-              <Badge variant="outline">
-                <Users className="h-3 w-3 mr-1" />
-                All Time
-              </Badge>
+            </div>
+
+            {/* Filters for NGOs */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex items-center space-x-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <Select value={ngoTimeFilter} onValueChange={setNgoTimeFilter}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="this-week">This Week</SelectItem>
+                    <SelectItem value="this-month">This Month</SelectItem>
+                    <SelectItem value="this-year">This Year</SelectItem>
+                    <SelectItem value="all-time">All Time</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <Select value={ngoRegionFilter} onValueChange={setNgoRegionFilter}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Regions</SelectItem>
+                    <SelectItem value="north">North Region</SelectItem>
+                    <SelectItem value="south">South Region</SelectItem>
+                    <SelectItem value="east">East Region</SelectItem>
+                    <SelectItem value="west">West Region</SelectItem>
+                    <SelectItem value="central">Central Region</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="space-y-3">

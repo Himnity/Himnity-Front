@@ -23,15 +23,24 @@ interface EventCardProps {
     }>;
   };
   onJoin?: (eventId: string) => void;
+  onEventClick?: (eventId: string) => void;
 }
 
-export const EventCard = ({ event, onJoin }: EventCardProps) => {
-  const handleJoinClick = () => {
+export const EventCard = ({ event, onJoin, onEventClick }: EventCardProps) => {
+  const handleJoinClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (onJoin) onJoin(event.id);
   };
 
+  const handleCardClick = () => {
+    if (onEventClick) onEventClick(event.id);
+  };
+
   return (
-    <div className="card-civic overflow-hidden">
+    <div 
+      className="card-civic overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+      onClick={handleCardClick}
+    >
       {/* Event Image */}
       <div className="relative h-48 overflow-hidden">
         <img 
@@ -98,7 +107,7 @@ export const EventCard = ({ event, onJoin }: EventCardProps) => {
             className="gradient-primary hover:scale-105 transition-transform"
             size="sm"
           >
-            Join Event
+            Request to Join
           </Button>
         </div>
       </div>

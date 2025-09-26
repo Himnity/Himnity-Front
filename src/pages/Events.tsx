@@ -1,11 +1,15 @@
 import { AppLayout } from "@/components/Layout/AppLayout";
 import { EventCard } from "@/components/Events/EventCard";
+import { ProposalCard } from "@/components/Events/ProposalCard";
+import { ProposalFormDialog } from "@/components/Events/ProposalFormDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Mock events data
 const upcomingEvents = [
@@ -20,6 +24,11 @@ const upcomingEvents = [
     participants: 23,
     maxParticipants: 50,
     rewardPoints: 250,
+    tags: [
+      { label: "Physical Activity", variant: "activity" as const },
+      { label: "Outdoors", variant: "location" as const },
+      { label: "Gardening", variant: "skill" as const }
+    ]
   },
   {
     id: "2",
@@ -32,6 +41,11 @@ const upcomingEvents = [
     participants: 8,
     maxParticipants: 20,
     rewardPoints: 150,
+    tags: [
+      { label: "Teaching", variant: "activity" as const },
+      { label: "Indoors", variant: "location" as const },
+      { label: "Technology", variant: "skill" as const }
+    ]
   },
   {
     id: "3",
@@ -44,6 +58,11 @@ const upcomingEvents = [
     participants: 45,
     maxParticipants: 100,
     rewardPoints: 200,
+    tags: [
+      { label: "Physical Activity", variant: "activity" as const },
+      { label: "Outdoors", variant: "location" as const },
+      { label: "Community Service", variant: "default" as const }
+    ]
   }
 ];
 
@@ -51,26 +70,35 @@ const proposedEvents = [
   {
     id: "p1",
     title: "Mobile Food Pantry",
-    description: "Bring healthy food options to underserved neighborhoods using a mobile distribution system.",
+    description: "Bring healthy food options to underserved neighborhoods using a mobile distribution system that can reach areas with limited access to fresh groceries.",
     category: "Social Services",
-    organizer: "Community Member",
-    date: "Proposed for November",
-    location: "Various Locations",
-    participants: 0,
-    maxParticipants: 30,
-    rewardPoints: 300,
+    proposedBy: "Sarah Johnson",
+    proposedDate: "Oct 5, 2025",
+    preferredTime: "Weekends, Morning",
+    upvotes: 24,
+    isUpvoted: false
   },
   {
     id: "p2", 
     title: "Youth Coding Bootcamp",
-    description: "Free coding classes for teenagers to learn web development and prepare for tech careers.",
+    description: "Free coding classes for teenagers to learn web development and prepare for tech careers. Would include mentorship from local developers.",
     category: "Education",
-    organizer: "Student Volunteer",
-    date: "Proposed for December", 
-    location: "High School Computer Lab",
-    participants: 0,
-    maxParticipants: 25,
-    rewardPoints: 400,
+    proposedBy: "Alex Chen",
+    proposedDate: "Sep 28, 2025", 
+    preferredTime: "Weekday afternoons",
+    upvotes: 18,
+    isUpvoted: true
+  },
+  {
+    id: "p3",
+    title: "Community Art Mural Project",
+    description: "Create a collaborative mural that represents our diverse community, involving local artists and residents of all ages.",
+    category: "Arts",
+    proposedBy: "Maria Rodriguez",
+    proposedDate: "Oct 12, 2025",
+    preferredTime: "Weekend, All day",
+    upvotes: 31,
+    isUpvoted: false
   }
 ];
 
@@ -86,26 +114,77 @@ const pastEvents = [
     participants: 75,
     maxParticipants: 75,
     rewardPoints: 200,
+    tags: [
+      { label: "Physical Activity", variant: "activity" as const },
+      { label: "Outdoors", variant: "location" as const },
+      { label: "Environmental", variant: "skill" as const }
+    ]
+  },
+  {
+    id: "past2",
+    title: "Senior Tech Help Day",
+    description: "Successfully taught 30 seniors how to use smartphones and video calling apps.",
+    category: "Education", 
+    organizer: "TechForAll",
+    date: "Completed • Sep 15, 2025",
+    location: "Community Library",
+    participants: 15,
+    maxParticipants: 15,
+    rewardPoints: 180,
+    tags: [
+      { label: "Teaching", variant: "activity" as const },
+      { label: "Indoors", variant: "location" as const },
+      { label: "Technology", variant: "skill" as const }
+    ]
   }
 ];
 
 const categories = ["All", "Environment", "Education", "Social Services", "Health", "Arts"];
 
 const Events = () => {
+  const navigate = useNavigate();
+  const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false);
+  const [proposals, setProposals] = useState(proposedEvents);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+
   const handleJoinEvent = (eventId: string) => {
-    toast.success("Successfully joined event! You'll get a reminder before it starts.", {
-      description: "Check your profile to see all your upcoming events."
+    toast.success("Join request sent! You'll be notified when the organizer reviews your request.", {
+      description: "Check your profile to see your pending requests."
+    });
+  };
+
+  const handleEventClick = (eventId: string) => {
+    navigate(`/event/${eventId}`);
+  };
+
+  const handleUpvoteProposal = (proposalId: string) => {
+    setProposals(prevProposals => 
+      prevProposals.map(proposal => {
+        if (proposal.id === proposalId) {
+          const wasUpvoted = proposal.isUpvoted;
+          return {
+            ...proposal,
+            upvotes: wasUpvoted ? proposal.upvotes - 1 : proposal.upvotes + 1,
+            isUpvoted: !wasUpvoted
+          };
+        }
+        return proposal;
+      })
+    );
+    
+    toast.success("Vote updated!", {
+      description: "Your support helps NGOs see which ideas the community wants most."
     });
   };
 
   const handleProposeEvent = () => {
-    toast.info("Event proposal feature coming soon!", {
-      description: "You'll be able to submit ideas for NGOs to consider."
-    });
+    setIsProposalDialogOpen(true);
   };
 
+
+
   return (
-    <AppLayout title="Events" showFab={true} fabAction={handleProposeEvent}>
+    <AppLayout title="Events">
       <div className="space-y-4 p-4">
         {/* Search and Filters */}
         <div className="space-y-3">
@@ -117,16 +196,28 @@ const Events = () => {
             />
           </div>
           
-          <div className="flex items-center space-x-2 overflow-x-auto pb-2">
-            {categories.map((category) => (
-              <Badge
-                key={category}
-                variant={category === "All" ? "default" : "outline"}
-                className="whitespace-nowrap cursor-pointer hover:bg-primary/10"
-              >
-                {category}
-              </Badge>
-            ))}
+          <div className="space-y-2">
+            <div className="flex flex-wrap gap-2">
+              {(showAllCategories ? categories : categories.slice(0, 4)).map((category) => (
+                <Badge
+                  key={category}
+                  variant={category === "All" ? "default" : "outline"}
+                  className="cursor-pointer hover:bg-primary/10 transition-colors"
+                >
+                  {category}
+                </Badge>
+              ))}
+              {categories.length > 4 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAllCategories(!showAllCategories)}
+                  className="h-6 px-2 text-xs text-muted-foreground hover:text-primary"
+                >
+                  {showAllCategories ? 'Less' : `+${categories.length - 4} More`}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -149,7 +240,12 @@ const Events = () => {
               </Button>
             </div>
             {upcomingEvents.map((event) => (
-              <EventCard key={event.id} event={event} onJoin={handleJoinEvent} />
+              <EventCard 
+                key={event.id} 
+                event={event} 
+                onJoin={handleJoinEvent} 
+                onEventClick={handleEventClick}
+              />
             ))}
           </TabsContent>
 
@@ -172,8 +268,8 @@ const Events = () => {
                 💡 These are event ideas from community members waiting for NGOs to adopt them
               </p>
             </div>
-            {proposedEvents.map((event) => (
-              <EventCard key={event.id} event={event} onJoin={handleJoinEvent} />
+            {proposals.map((proposal) => (
+              <ProposalCard key={proposal.id} proposal={proposal} onUpvote={handleUpvoteProposal} />
             ))}
           </TabsContent>
 
@@ -184,11 +280,21 @@ const Events = () => {
               </h2>
             </div>
             {pastEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard 
+                key={event.id} 
+                event={event} 
+                onEventClick={handleEventClick}
+              />
             ))}
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Proposal Form Dialog */}
+      <ProposalFormDialog 
+        open={isProposalDialogOpen} 
+        onOpenChange={setIsProposalDialogOpen} 
+      />
     </AppLayout>
   );
 };
