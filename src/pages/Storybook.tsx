@@ -234,7 +234,7 @@ const Storybook = () => {
   const handleExport = () => toast.success(`Exporting ${city} impact report to PDF...`);
 
   return (
-    <AppLayout title="Impact Storybook" showFab={false}>
+    <AppLayout title="Impact Storybook">
       <div className="space-y-6 pb-20">
         <div className="px-4 pt-6 md:px-6">
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -243,7 +243,7 @@ const Storybook = () => {
               <p className="text-muted-foreground">{month}</p>
             </div>
             <div className="flex flex-col gap-3 md:items-end">
-              <Select value={selectedCity} onValueChange={setSelectedCity}>
+              <Select value={selectedCity} onValueChange={(value: string) => setSelectedCity(value as typeof selectedCity)}>
                 <SelectTrigger className="w-full md:w-56">
                   <SelectValue placeholder="Choose a region" />
                 </SelectTrigger>
@@ -291,7 +291,12 @@ const Storybook = () => {
         </div>
 
         <div className="px-4 md:px-6">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">Key Impact Metrics</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-foreground">Key Impact Metrics</h2>
+            <Button variant="outline" size="sm" className="text-xs">
+              Show All
+            </Button>
+          </div>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card className="border-border bg-card">
               <CardContent className="px-4 pb-4 pt-4 text-center">

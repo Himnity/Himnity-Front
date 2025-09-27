@@ -30,40 +30,30 @@ export const ImpactTree = ({ impactPoints, level, className = "" }: ImpactTreePr
 
   return (
     <div className={`space-y-3 ${className}`}>
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium font-heading text-foreground">
-          Impact Level {level}
-        </span>
-        <span className="text-xs text-muted-foreground">
-          {impactPoints} points
-        </span>
-      </div>
-      
-      <div className="flex flex-col items-center space-y-2">
-        <div className="text-4xl animate-pulse">
+      <div className="text-center space-y-2">
+        <div className="text-3xl animate-pulse">
           {getTreeIcon(stage)}
         </div>
-        <div className="text-xs text-center text-muted-foreground capitalize">
-          {stage} Tree
+        <div className="space-y-1">
+          <div className="text-sm font-heading font-medium text-foreground">
+            Level {level}
+          </div>
+          <div className="text-xs text-muted-foreground capitalize">
+            {stage} Tree
+          </div>
         </div>
       </div>
 
       <div className="space-y-1">
-        <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Growth Progress</span>
-          <span>{Math.min(progress, 100).toFixed(0)}%</span>
-        </div>
         <div className="w-full bg-muted rounded-full h-2">
           <div 
             className="h-2 rounded-full bg-gradient-to-r from-success to-primary transition-all duration-500"
             style={{ width: `${Math.min(progress, 100)}%` }}
           />
         </div>
-        {stage !== "mature" && (
-          <div className="text-xs text-muted-foreground text-center">
-            {nextStagePoints - impactPoints} points to next stage
-          </div>
-        )}
+        <div className="text-xs text-center text-muted-foreground">
+          {impactPoints} / {nextStagePoints} points
+        </div>
       </div>
     </div>
   );

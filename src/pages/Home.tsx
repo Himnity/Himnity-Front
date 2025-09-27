@@ -135,7 +135,7 @@ const Home = () => {
               level={mockUser.level}
             />
           </Card>
-          <Card className="p-4 card-civic">
+          <Card className="p-4 card-civic cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => navigate("/profile")}>
             <MilestoneTracker milestones={mockMilestones} />
           </Card>
         </section>

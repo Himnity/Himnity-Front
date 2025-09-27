@@ -284,7 +284,12 @@ const Profile = () => {
 
         {/* Impact Stats */}
         <Card className="p-6 card-civic">
-          <h3 className="text-lg font-heading font-semibold mb-4">Your Impact</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-heading font-semibold">Your Impact</h3>
+            <Button variant="outline" size="sm" className="text-xs">
+              View All
+            </Button>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">{userStats.eventsJoined}</div>

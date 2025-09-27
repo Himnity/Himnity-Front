@@ -154,8 +154,8 @@ const HallOfFame = () => {
                 <div className="flex items-center space-x-3 text-white">
                   <div className="text-2xl">{champion.badge}</div>
                   <div className="flex-1">
-                    <div className="font-heading font-semibold">{champion.title}</div>
-                    <div className="text-sm opacity-90">{champion.name}</div>
+                    <div className="font-heading font-semibold">{champion.name}</div>
+                    <div className="text-sm opacity-90">{champion.title}</div>
                     <div className="text-xs opacity-75">{champion.achievement}</div>
                   </div>
                 </div>
