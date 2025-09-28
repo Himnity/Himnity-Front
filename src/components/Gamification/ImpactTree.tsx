@@ -24,6 +24,14 @@ export const ImpactTree = ({ impactPoints, level, className = "" }: ImpactTreePr
     }
   };
 
+  const getStageLabel = (stage: string) => {
+    if (stage === "tree") {
+      return "Poplar Tree";
+    }
+
+    return `${stage} Tree`;
+  };
+
   const stage = getTreeStage(impactPoints);
   const nextStagePoints = stage === "seedling" ? 100 : stage === "sapling" ? 500 : stage === "tree" ? 1000 : 2000;
   const progress = (impactPoints / nextStagePoints) * 100;
@@ -39,7 +47,7 @@ export const ImpactTree = ({ impactPoints, level, className = "" }: ImpactTreePr
             Level {level}
           </div>
           <div className="text-xs text-muted-foreground capitalize">
-            {stage} Tree
+            {getStageLabel(stage)}
           </div>
         </div>
       </div>

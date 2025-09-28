@@ -15,11 +15,12 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import HimnityLogo from "@/assets/Himnity-Logo.png";
 
 // Mock NGO data
 const ngoData = {
   name: "Green Future NGO",
-  logo: "GF",
+  logo: HimnityLogo,
   eventsOrganized: 45,
   totalParticipants: 1250,
   impactScore: 9.2,
@@ -50,7 +51,7 @@ const recentProposals = [
   {
     id: "p3",
     title: "Youth Coding Bootcamp",
-    proposedBy: "Alex Chen",
+    proposedBy: "Amine Gharbi",
     upvotes: 18,
     category: "Education",
     urgency: "Low",
@@ -113,8 +114,12 @@ const NGODashboard = () => {
                 Manage your organization's community impact
               </p>
             </div>
-            <div className="w-12 h-12 rounded-lg gradient-civic flex items-center justify-center">
-              <span className="text-white font-heading font-bold text-lg">{ngoData.logo}</span>
+            <div className="w-12 h-12 rounded-lg border border-border bg-card flex items-center justify-center overflow-hidden">
+              <img
+                src={ngoData.logo}
+                alt="Himnity logo"
+                className="h-10 w-10 object-contain"
+              />
             </div>
           </div>
         </section>

@@ -41,7 +41,7 @@ const individualLeaders = [
   },
   { 
     rank: 4, 
-    name: "Alex Chen", 
+    name: "Amine Gharbi", 
     points: 1950, 
     avatar: "AC",
     level: 8,

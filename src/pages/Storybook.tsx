@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Download,
   Share2,
   MapPin,
   Users,
@@ -203,6 +202,174 @@ const medalStyles = [
 
 const medalLabels = ["1st", "2nd", "3rd"];
 
+type TunisiaHeatmapProps = {
+  activeCity: string;
+  totalEvents: number;
+  treesPlanted: number;
+};
+
+type BaseHotspot = {
+  name: string;
+  top: string;
+  left: string;
+  impactScore: number;
+  forestCover: number;
+};
+
+const tunisiaBaseHotspots: readonly BaseHotspot[] = [
+  { name: "Tunis", top: "18%", left: "49%", impactScore: 28, forestCover: 180 },
+  { name: "Bizerte", top: "10%", left: "43%", impactScore: 18, forestCover: 140 },
+  { name: "Beja", top: "24%", left: "39%", impactScore: 14, forestCover: 118 },
+  { name: "Kairouan", top: "46%", left: "51%", impactScore: 16, forestCover: 104 },
+  { name: "Sousse", top: "49%", left: "60%", impactScore: 21, forestCover: 126 },
+  { name: "Monastir", top: "55%", left: "63%", impactScore: 17, forestCover: 112 },
+  { name: "Sfax", top: "70%", left: "63%", impactScore: 15, forestCover: 96 },
+  { name: "Gabes", top: "79%", left: "58%", impactScore: 13, forestCover: 84 },
+  { name: "Gafsa", top: "63%", left: "44%", impactScore: 13, forestCover: 92 },
+  { name: "Tozeur", top: "75%", left: "37%", impactScore: 11, forestCover: 72 },
+] as const;
+
+const TunisiaHeatmap = ({ activeCity, totalEvents, treesPlanted }: TunisiaHeatmapProps) => {
+  const hotspots = tunisiaBaseHotspots.map((spot) => {
+    const isActive = spot.name === activeCity;
+    const heatScore = isActive ? totalEvents : spot.impactScore;
+    const treeCount = Math.max(isActive ? treesPlanted : spot.forestCover, 6);
+    const heatSize = Math.min(180, 70 + Math.max(heatScore, 4) * 2.6);
+    const forestDensity = isActive
+      ? Math.max(3, Math.min(6, Math.round(treeCount / 20)))
+      : Math.max(2, Math.min(5, Math.round(spot.forestCover / 35)));
+
+    return {
+      ...spot,
+      isActive,
+      heatScore: Math.max(heatScore, 3),
+      treeCount,
+      heatSize,
+      forestDensity,
+    };
+  });
+
+  const tunisiaClipPath =
+    "polygon(50% 0%, 60% 6%, 64% 16%, 66% 26%, 61% 38%, 64% 50%, 58% 64%, 60% 78%, 55% 92%, 44% 100%, 38% 88%, 42% 72%, 38% 58%, 44% 44%, 40% 28%, 46% 12%)";
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-400">
+            Tunisia Heatmap
+          </p>
+          <h3 className="text-xl font-semibold text-foreground">Where communities take root</h3>
+          <p className="text-sm text-muted-foreground">
+            Each glow shows a pocket of volunteer momentum and forest renewal.
+          </p>
+        </div>
+        <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100 shadow-inner">
+          <div className="flex items-center gap-2 font-medium">
+            <MapPin className="h-4 w-4" />
+            {activeCity}
+          </div>
+          <div className="mt-1 text-xs text-emerald-100/80">
+            {totalEvents} events & {treesPlanted} trees planted
+          </div>
+        </div>
+      </div>
+
+      <div className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 p-6">
+        <div className="pointer-events-none absolute inset-0 opacity-80 mix-blend-screen bg-[radial-gradient(circle_at_20%_20%,rgba(45,212,191,0.18),transparent_55%),radial-gradient(circle_at_80%_25%,rgba(52,211,153,0.12),transparent_60%),radial-gradient(circle_at_50%_80%,rgba(74,222,128,0.14),transparent_65%)]" />
+        <div className="relative mx-auto flex h-72 w-full max-w-3xl items-center justify-center">
+          <div className="relative h-full w-40 sm:w-48">
+            <div
+              className="absolute left-1/2 top-0 h-full w-full -translate-x-1/2"
+              style={{ clipPath: tunisiaClipPath }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/60 via-lime-500/30 to-emerald-900/70" />
+              <div className="absolute inset-0 opacity-70 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.18),transparent_60%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_60%,rgba(15,118,110,0.4),transparent_70%)]" />
+              <div className="absolute inset-0 border border-emerald-400/30" />
+            </div>
+          </div>
+
+          {hotspots.map((spot) => (
+            <div
+              key={spot.name}
+              className="absolute"
+              style={{
+                top: spot.top,
+                left: spot.left,
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              <div className="relative flex flex-col items-center gap-1 text-center">
+                <div
+                  className="-z-10 absolute"
+                  style={{
+                    top: "50%",
+                    left: "50%",
+                    width: `${spot.heatSize}px`,
+                    height: `${spot.heatSize}px`,
+                    transform: "translate(-50%, -50%)",
+                    borderRadius: "9999px",
+                    background: spot.isActive
+                      ? "radial-gradient(circle, rgba(34,197,94,0.55) 0%, rgba(16,185,129,0.38) 45%, rgba(15,118,110,0.18) 70%, transparent 100%)"
+                      : "radial-gradient(circle, rgba(34,197,94,0.35) 0%, rgba(16,185,129,0.26) 45%, rgba(15,118,110,0.12) 70%, transparent 100%)",
+                    boxShadow: spot.isActive
+                      ? "0 0 48px rgba(74,222,128,0.55)"
+                      : "0 0 24px rgba(16,185,129,0.38)",
+                  }}
+                />
+                <div
+                  className={`flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-widest backdrop-blur ${
+                    spot.isActive
+                      ? "border-lime-300/60 bg-lime-400/20 text-lime-100 shadow-lg"
+                      : "border-emerald-400/30 bg-emerald-500/15 text-emerald-100/90"
+                  }`}
+                >
+                  <MapPin className={`h-3 w-3 ${spot.isActive ? "text-lime-200" : "text-emerald-200/90"}`} />
+                  {spot.name}
+                </div>
+                <div className="flex items-center gap-2 rounded-md border border-emerald-400/20 bg-slate-950/40 px-2 py-[6px] text-[10px] text-emerald-100/80">
+                  <span className="font-semibold text-emerald-100">{spot.heatScore}</span>
+                  <span className="uppercase tracking-widest opacity-70">impact pulse</span>
+                </div>
+                <div className="flex items-center gap-[2px] text-[10px] text-emerald-100/75">
+                  {Array.from({ length: spot.forestDensity }).map((_, index) => (
+                    <TreePine
+                      key={index}
+                      className={`h-3 w-3 ${spot.isActive ? "text-lime-200" : "text-emerald-300/90"}`}
+                    />
+                  ))}
+                  <span className="ml-1 font-medium text-emerald-50/80">{spot.treeCount}+ trees</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="relative mt-6 grid gap-3 text-xs text-emerald-100/80 sm:grid-cols-3">
+          <div className="flex items-center gap-2">
+            <span className="h-3 w-10 rounded-full bg-gradient-to-r from-emerald-200 via-emerald-500 to-emerald-900" />
+            <span>Heat intensity mirrors volunteer turnout</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-[2px]">
+              <TreePine className="h-3 w-3 text-emerald-200" />
+              <TreePine className="h-3 w-3 text-emerald-200/70" />
+              <TreePine className="h-3 w-3 text-emerald-200/40" />
+            </div>
+            <span>Tree clusters highlight regenerated forests</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-emerald-200" />
+            <span>The brightest glow spotlights {activeCity}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 type ImageProps = {
   src: string;
   alt: string;
@@ -231,15 +398,14 @@ const Storybook = () => {
   const { city, month, metrics, events, organizers, members } = activeReport;
 
   const handleShare = () => toast.success(`${city} impact report ready to share!`);
-  const handleExport = () => toast.success(`Exporting ${city} impact report to PDF...`);
 
   return (
-    <AppLayout title="Impact Storybook">
+    <AppLayout title="Storybook">
       <div className="space-y-6 pb-20">
         <div className="px-4 pt-6 md:px-6">
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Impact Storybook</h1>
+              <h1 className="text-2xl font-bold text-foreground">A Story of Unity</h1>
               <p className="text-muted-foreground">{month}</p>
             </div>
             <div className="flex flex-col gap-3 md:items-end">
@@ -264,14 +430,6 @@ const Storybook = () => {
                 >
                   <Share2 className="mr-2 h-4 w-4" />
                   Share
-                </Button>
-                <Button
-                  size="sm"
-                  className="bg-accent text-accent-foreground hover:bg-accent/90"
-                  onClick={handleExport}
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Export PDF
                 </Button>
               </div>
             </div>
@@ -384,7 +542,7 @@ const Storybook = () => {
         </div>
 
         <div className="px-4 md:px-6">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">Hall of Fame</h2>
+          <h2 className="mb-4 text-lg font-semibold text-foreground">Notable Contributions</h2>
           <Card className="border-border bg-card">
             <CardHeader className="flex items-center gap-2 p-4 pb-0">
               <Award className="h-5 w-5 text-accent" />
@@ -447,15 +605,11 @@ const Storybook = () => {
           <h2 className="mb-4 text-lg font-semibold text-foreground">Event Locations</h2>
           <Card className="border-border bg-card">
             <CardContent className="p-6">
-              <div className="flex h-40 items-center justify-center rounded-lg bg-secondary">
-                <div className="text-center text-muted-foreground">
-                  <MapPin className="mx-auto mb-2 h-8 w-8" />
-                  <p className="text-sm">Interactive Map Heatmap</p>
-                  <p className="text-xs">
-                    Showing {metrics.totalEvents} events across {city}
-                  </p>
-                </div>
-              </div>
+              <TunisiaHeatmap
+                activeCity={city}
+                totalEvents={metrics.totalEvents}
+                treesPlanted={metrics.treesPlanted}
+              />
             </CardContent>
           </Card>
         </div>

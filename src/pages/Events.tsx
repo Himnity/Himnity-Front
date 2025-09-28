@@ -83,7 +83,7 @@ const proposedEvents = [
     title: "Youth Coding Bootcamp",
     description: "Free coding classes for teenagers to learn web development and prepare for tech careers. Would include mentorship from local developers.",
     category: "Education",
-    proposedBy: "Alex Chen",
+    proposedBy: "Amine Gharbi",
     proposedDate: "Sep 28, 2025", 
     preferredTime: "Weekday afternoons",
     upvotes: 18,

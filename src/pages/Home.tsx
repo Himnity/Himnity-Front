@@ -13,7 +13,7 @@ import { useState } from "react";
 
 // Mock data
 const mockUser = {
-  name: "Alex Chen",
+  name: "Amine Gharbi",
   level: 5,
   currentXP: 750,
   nextLevelXP: 1000,

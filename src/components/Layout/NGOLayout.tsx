@@ -3,6 +3,7 @@ import { NGOBottomNavigation } from "./NGOBottomNavigation";
 import { Search, Bell, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import HimnityLogo from "@/assets/Himnity-Logo.png";
 
 interface NGOLayoutProps {
   children: ReactNode;
@@ -20,9 +21,11 @@ export const NGOLayout = ({ children, title }: NGOLayoutProps) => {
               <h1 className="text-lg font-heading font-bold text-foreground">{title}</h1>
             ) : (
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg gradient-civic flex items-center justify-center">
-                  <span className="text-white font-heading font-bold text-sm">N</span>
-                </div>
+                <img
+                  src={HimnityLogo}
+                  alt="Himnity logo"
+                  className="h-8 w-auto"
+                />
                 <div className="flex flex-col">
                   <span className="font-heading font-bold text-primary text-sm">NGO Portal</span>
                   <Badge variant="secondary" className="text-xs w-fit">Organization</Badge>

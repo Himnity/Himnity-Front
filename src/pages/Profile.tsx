@@ -14,7 +14,7 @@ import { toast } from "sonner";
 
 // Mock user data
 const user = {
-  name: "Alex Chen",
+  name: "Amine Gharbi",
   avatar: "AC",
   level: 5,
   currentXP: 750,

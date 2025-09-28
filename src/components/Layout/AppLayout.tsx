@@ -1,7 +1,10 @@
 import { ReactNode } from "react";
 import { BottomNavigation } from "./BottomNavigation";
 import { Search, Bell } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { Button } from "@/components/ui/button";
+import HimnityLogo from "@/assets/Himnity-Logo.png";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -19,14 +22,18 @@ export const AppLayout = ({ children, title }: AppLayoutProps) => {
               <h1 className="text-lg font-heading font-bold text-foreground">{title}</h1>
             ) : (
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg gradient-civic flex items-center justify-center">
-                  <span className="text-white font-heading font-bold text-sm">C</span>
-                </div>
-                <span className="font-heading font-bold text-primary">CivicConnect</span>
+                <img
+                  src={HimnityLogo}
+                  alt="Himnity logo"
+                  className="h-8 w-auto"
+                />
+                <span className="sr-only">Himnity</span>
               </div>
             )}
           </div>
           <div className="flex items-center space-x-2">
+            <LanguageToggle />
+            <ThemeToggle />
             <Button variant="ghost" size="icon">
               <Search className="h-5 w-5" />
             </Button>
