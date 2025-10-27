@@ -1,7 +1,9 @@
+import { MouseEvent } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tag } from "@/components/ui/tag";
-import { Calendar, MapPin, Users, Star } from "lucide-react";
+import { Calendar, MapPin, Users, Star, Heart, Share2 } from "lucide-react";
 import communityEventImage from "@/assets/community-event.jpg";
 
 interface EventCardProps {
@@ -21,15 +23,30 @@ interface EventCardProps {
       label: string;
       variant?: "default" | "activity" | "skill" | "location";
     }>;
+    likes?: number;
+    shares?: number;
+    isLiked?: boolean;
   };
   onJoin?: (eventId: string) => void;
   onEventClick?: (eventId: string) => void;
+  onShare?: (event: EventCardProps["event"]) => void;
+  onToggleLike?: (eventId: string) => void;
 }
 
-export const EventCard = ({ event, onJoin, onEventClick }: EventCardProps) => {
-  const handleJoinClick = (e: React.MouseEvent) => {
+export const EventCard = ({ event, onJoin, onEventClick, onShare, onToggleLike }: EventCardProps) => {
+  const handleJoinClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (onJoin) onJoin(event.id);
+  };
+
+  const handleShareClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (onShare) onShare(event);
+  };
+
+  const handleLikeClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (onToggleLike) onToggleLike(event.id);
   };
 
   const handleCardClick = () => {
@@ -37,14 +54,13 @@ export const EventCard = ({ event, onJoin, onEventClick }: EventCardProps) => {
   };
 
   return (
-    <div 
+    <div
       className="card-civic overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
       onClick={handleCardClick}
     >
-      {/* Event Image */}
       <div className="relative h-48 overflow-hidden">
-        <img 
-          src={event.imageUrl || communityEventImage} 
+        <img
+          src={event.imageUrl || communityEventImage}
           alt={event.title}
           className="w-full h-full object-cover"
         />
@@ -59,34 +75,30 @@ export const EventCard = ({ event, onJoin, onEventClick }: EventCardProps) => {
         </div>
       </div>
 
-      {/* Event Content */}
-      <div className="p-4 space-y-3">
-        <div>
-          <h3 className="font-heading font-semibold text-foreground text-lg line-clamp-2">
-            {event.title}
-          </h3>
-          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+      <div className="p-4 space-y-4">
+        <div className="space-y-2">
+          <div>
+            <h3 className="font-heading font-semibold text-foreground text-lg leading-snug line-clamp-2">
+              {event.title}
+            </h3>
+            <p className="text-sm text-muted-foreground">Hosted by {event.organizer}</p>
+          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
             {event.description}
           </p>
         </div>
 
-        {/* Event Details */}
-        <div className="space-y-2 text-sm">
-          <div className="flex items-center text-muted-foreground">
-            <Calendar className="h-4 w-4 mr-2" />
-            <span>{event.date}</span>
-          </div>
-          <div className="flex items-center text-muted-foreground">
-            <MapPin className="h-4 w-4 mr-2" />
-            <span className="line-clamp-1">{event.location}</span>
-          </div>
-          <div className="flex items-center text-muted-foreground">
-            <Users className="h-4 w-4 mr-2" />
-            <span>{event.participants} / {event.maxParticipants} participants</span>
-          </div>
+        <div className="flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+            <Calendar className="h-4 w-4 text-primary" />
+            {event.date}
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+            <MapPin className="h-4 w-4 text-primary" />
+            {event.location}
+          </span>
         </div>
 
-        {/* Event Tags (under participants) */}
         {event.tags && event.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {event.tags.map((tag, index) => (
@@ -97,18 +109,64 @@ export const EventCard = ({ event, onJoin, onEventClick }: EventCardProps) => {
           </div>
         )}
 
-        {/* Organizer & Action */}
-        <div className="flex items-center justify-between pt-2">
-          <span className="text-sm text-muted-foreground">
-            by {event.organizer}
-          </span>
-          <Button 
-            onClick={handleJoinClick}
-            className="gradient-primary hover:scale-105 transition-transform"
-            size="sm"
-          >
-            Request to Join
-          </Button>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-1">
+              <Users className="h-4 w-4 text-primary" />
+              {event.participants}/{event.maxParticipants}
+            </span>
+            {typeof event.likes === "number" && (
+              onToggleLike ? (
+                <span className="inline-flex items-center gap-2 text-sm">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-pressed={event.isLiked}
+                    onClick={handleLikeClick}
+                    className={`h-8 w-8 rounded-full transition-colors ${
+                      event.isLiked ? "text-rose-500 hover:text-rose-600" : "text-muted-foreground hover:text-rose-500"
+                    }`}
+                  >
+                    <Heart
+                      className="h-5 w-5"
+                      fill={event.isLiked ? "currentColor" : "none"}
+                    />
+                    <span className="sr-only">{event.isLiked ? "Remove like" : "Like event"}</span>
+                  </Button>
+                  <span className="text-sm text-muted-foreground">{event.likes}</span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1">
+                  <Heart className="h-4 w-4 text-rose-500" />
+                  {event.likes}
+                </span>
+              )
+            )}
+            {typeof event.shares === "number" && (
+              <span className="inline-flex items-center gap-1">
+                <Share2 className="h-4 w-4 text-primary" />
+                {event.shares}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handleShareClick}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 border-primary/30 text-primary hover:bg-primary/10 dark:border-primary/40 dark:text-primary"
+            >
+              <Share2 className="h-4 w-4" />
+              Share
+            </Button>
+            <Button
+              onClick={handleJoinClick}
+              className="bg-[#4CAF50] hover:bg-[#449a48] text-white shadow-sm"
+              size="sm"
+            >
+              Join
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -4,26 +4,37 @@ import { ProposalCard } from "@/components/Events/ProposalCard";
 import { ProposalFormDialog } from "@/components/Events/ProposalFormDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Plus } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList
+} from "@/components/ui/command";
+import { Search, Plus, MapPin, Compass, Clock, CalendarDays, Check, ChevronDown, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-// Mock events data
-const upcomingEvents = [
+const initialUpcomingEvents = [
   {
     id: "1",
     title: "Community Garden Revival",
     description: "Help transform an abandoned lot into a thriving community garden for local families.",
     category: "Environment",
     organizer: "Green Future NGO",
-    date: "Oct 15, 2025 • 9:00 AM",
-    location: "Downtown Community Center",
-    participants: 23,
-    maxParticipants: 50,
+    date: "Nov 6 • 9:00 AM",
+    location: "Downtown Community Center, Tunis",
+    participants: 34,
+    maxParticipants: 60,
     rewardPoints: 250,
+    likes: 86,
+    shares: 24,
+    isLiked: false,
     tags: [
       { label: "Physical Activity", variant: "activity" as const },
       { label: "Outdoors", variant: "location" as const },
@@ -32,15 +43,18 @@ const upcomingEvents = [
   },
   {
     id: "2",
-    title: "Digital Literacy Workshop", 
+    title: "Digital Literacy Workshop",
     description: "Teach seniors how to use smartphones and stay connected with family online.",
     category: "Education",
     organizer: "TechForAll",
-    date: "Oct 18, 2025 • 2:00 PM",
-    location: "Central Library", 
-    participants: 8,
-    maxParticipants: 20,
+    date: "Nov 11 • 2:00 PM",
+    location: "Central Library, Sfax",
+    participants: 18,
+    maxParticipants: 24,
     rewardPoints: 150,
+    likes: 42,
+    shares: 11,
+    isLiked: false,
     tags: [
       { label: "Teaching", variant: "activity" as const },
       { label: "Indoors", variant: "location" as const },
@@ -52,12 +66,15 @@ const upcomingEvents = [
     title: "Neighborhood Cleanup Day",
     description: "Join us for a community-wide effort to beautify our streets and parks.",
     category: "Environment",
-    organizer: "Clean Streets Initiative", 
-    date: "Oct 22, 2025 • 8:00 AM",
+    organizer: "Clean Streets Initiative",
+    date: "Nov 18 • 8:00 AM",
     location: "City Park Main Entrance",
     participants: 45,
     maxParticipants: 100,
     rewardPoints: 200,
+    likes: 58,
+    shares: 19,
+    isLiked: false,
     tags: [
       { label: "Physical Activity", variant: "activity" as const },
       { label: "Outdoors", variant: "location" as const },
@@ -75,8 +92,12 @@ const proposedEvents = [
     proposedBy: "Sarah Johnson",
     proposedDate: "Oct 5, 2025",
     preferredTime: "Weekends, Morning",
+    likes: 24,
     upvotes: 24,
-    isUpvoted: false
+    isLiked: false,
+    preRegistrations: 9,
+    supports: 9,
+    isPreRegistered: false
   },
   {
     id: "p2", 
@@ -86,8 +107,12 @@ const proposedEvents = [
     proposedBy: "Amine Gharbi",
     proposedDate: "Sep 28, 2025", 
     preferredTime: "Weekday afternoons",
+    likes: 18,
     upvotes: 18,
-    isUpvoted: true
+    isLiked: true,
+    preRegistrations: 6,
+    supports: 6,
+    isPreRegistered: false
   },
   {
     id: "p3",
@@ -97,57 +122,84 @@ const proposedEvents = [
     proposedBy: "Maria Rodriguez",
     proposedDate: "Oct 12, 2025",
     preferredTime: "Weekend, All day",
+    likes: 31,
     upvotes: 31,
-    isUpvoted: false
+    isLiked: false,
+    preRegistrations: 12,
+    supports: 12,
+    isPreRegistered: true
   }
 ];
 
-const pastEvents = [
-  {
-    id: "past1",
-    title: "Beach Cleanup Success!",
-    description: "Removed 500 lbs of trash and debris from the coastline with 75 amazing volunteers.",
-    category: "Environment", 
-    organizer: "Ocean Guardians",
-    date: "Completed • Sep 28, 2025",
-    location: "Sunset Beach",
-    participants: 75,
-    maxParticipants: 75,
-    rewardPoints: 200,
-    tags: [
-      { label: "Physical Activity", variant: "activity" as const },
-      { label: "Outdoors", variant: "location" as const },
-      { label: "Environmental", variant: "skill" as const }
-    ]
-  },
-  {
-    id: "past2",
-    title: "Senior Tech Help Day",
-    description: "Successfully taught 30 seniors how to use smartphones and video calling apps.",
-    category: "Education", 
-    organizer: "TechForAll",
-    date: "Completed • Sep 15, 2025",
-    location: "Community Library",
-    participants: 15,
-    maxParticipants: 15,
-    rewardPoints: 180,
-    tags: [
-      { label: "Teaching", variant: "activity" as const },
-      { label: "Indoors", variant: "location" as const },
-      { label: "Technology", variant: "skill" as const }
-    ]
-  }
+const tunisianCities = [
+  "Sousse",
+  "Tunis",
+  "Sfax",
+  "Bizerte",
+  "Nabeul",
+  "Monastir",
+  "Gabes",
+  "Kairouan",
+  "Gafsa",
+  "Mahdia",
+  "Tozeur"
 ];
 
 const categories = ["All", "Environment", "Education", "Social Services", "Health", "Arts"];
 
+const quickFilters = [
+  { id: "for-you", label: "For you", icon: Compass },
+  { id: "local", label: "Local", icon: MapPin },
+  { id: "this-week", label: "This week", icon: CalendarDays },
+  { id: "following", label: "Following", icon: Clock }
+];
+
 const Events = () => {
   const navigate = useNavigate();
   const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false);
+  const [upcoming, setUpcoming] = useState(initialUpcomingEvents);
   const [proposals, setProposals] = useState(proposedEvents);
-  const [showAllCategories, setShowAllCategories] = useState(false);
   const [searchParams] = useSearchParams();
-  const initialTab = (searchParams.get("tab") as "upcoming" | "proposed" | "past") || "upcoming";
+  const initialTabParam = searchParams.get("tab");
+  const initialTab = initialTabParam === "proposed" ? "proposed" : "upcoming";
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [selectedCity, setSelectedCity] = useState(tunisianCities[0]);
+  const [locationPopoverOpen, setLocationPopoverOpen] = useState(false);
+  const [activeQuickFilters, setActiveQuickFilters] = useState<string[]>(["for-you"]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(["All"]);
+  const [categoriesPopoverOpen, setCategoriesPopoverOpen] = useState(false);
+  const [showCategoryBadges, setShowCategoryBadges] = useState(false);
+  const [isSearchDialogOpen, setIsSearchDialogOpen] = useState(false);
+
+  const toggleQuickFilter = (id: string) => {
+    setActiveQuickFilters((prev) =>
+      prev.includes(id) ? prev.filter((filterId) => filterId !== id) : [...prev, id]
+    );
+  };
+
+  const toggleCategory = (category: string) => {
+    setSelectedCategories((prev) => {
+      if (category === "All") {
+        return ["All"];
+      }
+
+      const nextWithoutAll = prev.filter((item) => item !== "All");
+      const isAlreadySelected = nextWithoutAll.includes(category);
+      let updated = isAlreadySelected
+        ? nextWithoutAll.filter((item) => item !== category)
+        : [...nextWithoutAll, category];
+
+      if (updated.length === 0) {
+        updated = ["All"];
+      }
+
+      return updated;
+    });
+  };
+
+  const selectedCategoriesLabel = selectedCategories.includes("All")
+    ? "All categories"
+    : selectedCategories.join(", ");
 
   const handleJoinEvent = (eventId: string) => {
     toast.success("Join request sent! You'll be notified when the organizer reviews your request.", {
@@ -159,22 +211,118 @@ const Events = () => {
     navigate(`/event/${eventId}`);
   };
 
-  const handleUpvoteProposal = (proposalId: string) => {
-    setProposals(prevProposals =>
-      prevProposals.map(p => {
-        if (p.id === proposalId) {
-          const wasUpvoted = p.isUpvoted;
-          return {
-            ...p,
-            upvotes: wasUpvoted ? p.upvotes - 1 : p.upvotes + 1,
-            isUpvoted: !wasUpvoted,
-          };
-        }
-        return p;
+  const handleToggleLikeEvent = (eventId: string) => {
+    setUpcoming((previous) =>
+      previous.map((event) => {
+        if (event.id !== eventId) return event;
+        const alreadyLiked = event.isLiked ?? false;
+        const baseLikes = event.likes ?? 0;
+        const nextLikes = alreadyLiked ? Math.max(0, baseLikes - 1) : baseLikes + 1;
+        return { ...event, likes: nextLikes, isLiked: !alreadyLiked };
       })
     );
-    toast.success("Vote updated!", {
-      description: "Your support helps NGOs see which ideas the community wants most."
+  };
+
+  const handleShareEvent = async (event: typeof initialUpcomingEvents[number]) => {
+    const isBrowser = typeof window !== "undefined";
+    const shareUrl = isBrowser ? `${window.location.origin}/event/${event.id}` : `/event/${event.id}`;
+    const payload = {
+      title: event.title,
+      text: event.description,
+      url: shareUrl
+    };
+
+    let shared = false;
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share(payload);
+        toast.success("Shared with your network!", {
+          description: "Invite friends and neighbors to join this event."
+        });
+        shared = true;
+      } catch (error) {
+        if ((error as DOMException)?.name === "AbortError") {
+          return;
+        }
+      }
+    }
+
+    if (!shared && typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Link copied", {
+          description: "Paste it anywhere to keep the momentum going."
+        });
+        shared = true;
+      } catch {
+        // Ignore and fall through to error state
+      }
+    }
+
+    if (!shared) {
+      toast.error("Unable to share", {
+        description: "Try copying the link manually."
+      });
+      return;
+    }
+
+    setUpcoming((previous) =>
+      previous.map((item) =>
+        item.id === event.id ? { ...item, shares: (item.shares ?? 0) + 1 } : item
+      )
+    );
+  };
+
+  const handleToggleLikeProposal = (proposalId: string) => {
+    const current = proposals.find((proposal) => proposal.id === proposalId);
+    const wasLiked = current?.isLiked ?? false;
+
+    setProposals((previous) =>
+      previous.map((proposal) => {
+        if (proposal.id !== proposalId) return proposal;
+        const alreadyLiked = proposal.isLiked ?? false;
+        const baseLikes = proposal.likes ?? proposal.upvotes ?? 0;
+        const nextLikes = alreadyLiked ? Math.max(0, baseLikes - 1) : baseLikes + 1;
+        return {
+          ...proposal,
+          likes: nextLikes,
+          upvotes: nextLikes,
+          isLiked: !alreadyLiked
+        };
+      })
+    );
+
+    toast.success(wasLiked ? "Support withdrawn" : "Support added", {
+      description: wasLiked
+        ? "We'll dial back your cheers for this idea."
+        : "Thanks for cheering on this proposal!"
+    });
+  };
+
+  const handleTogglePreRegisterProposal = (proposalId: string) => {
+    const current = proposals.find((proposal) => proposal.id === proposalId);
+    const wasPreRegistered = current?.isPreRegistered ?? false;
+
+    setProposals((previous) =>
+      previous.map((proposal) => {
+        if (proposal.id !== proposalId) return proposal;
+        const alreadyRegistered = proposal.isPreRegistered ?? false;
+        const baseCount = proposal.preRegistrations ?? proposal.supports ?? 0;
+        const nextCount = alreadyRegistered ? Math.max(0, baseCount - 1) : baseCount + 1;
+        return {
+          ...proposal,
+          preRegistrations: nextCount,
+          supports: nextCount,
+          isPreRegistered: !alreadyRegistered
+        };
+      })
+    );
+
+    toast.success(wasPreRegistered ? "Pre-registration canceled" : "Pre-registered", {
+      description: wasPreRegistered
+        ? "No worries, your spot is freed up for now."
+        : "Great! We'll loop you in if the community needs to self-organize."
     });
   };
 
@@ -183,67 +331,196 @@ const Events = () => {
   };
 
   return (
-    <AppLayout title="Events">
-      <div className="space-y-4 p-4">
-        {/* Search and Filters */}
-        <div className="space-y-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Search events..."
-              className="pl-10"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex flex-wrap gap-2">
-              {(showAllCategories ? categories : categories.slice(0, 4)).map((category) => (
-                <Badge
-                  key={category}
-                  variant={category === "All" ? "default" : "outline"}
-                  className="cursor-pointer hover:bg-primary/10 transition-colors"
-                >
-                  {category}
-                </Badge>
-              ))}
-              {categories.length > 4 && (
+    <AppLayout>
+      <div className="space-y-4 pb-4">
+        <div className="sticky top-[4.5rem] z-30 space-y-2 bg-background/95 px-4 py-3 backdrop-blur-md">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => setIsSearchDialogOpen(true)}
+              className="h-10 w-10 rounded-full border border-border/60 bg-muted/40 text-muted-foreground transition hover:text-foreground"
+              aria-label="Search events and proposals"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+            <Popover open={locationPopoverOpen} onOpenChange={setLocationPopoverOpen}>
+              <PopoverTrigger asChild>
                 <Button
-                  variant="ghost"
                   size="sm"
-                  onClick={() => setShowAllCategories(!showAllCategories)}
-                  className="h-6 px-2 text-xs text-muted-foreground hover:text-primary"
+                  variant="ghost"
+                  className="flex w-full flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-border/60 bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm transition hover:bg-primary/20 md:w-auto md:flex-none"
                 >
-                  {showAllCategories ? 'Less' : `+${categories.length - 4} More`}
+                  <MapPin className="h-4 w-4" />
+                  {selectedCity}
+                  <span className="text-muted-foreground">|</span>
+                  <span className="text-muted-foreground">Change</span>
                 </Button>
-              )}
+              </PopoverTrigger>
+              <PopoverContent className="w-64 p-0" align="end">
+                <Command>
+                  <CommandInput placeholder="Search cities..." />
+                  <CommandList>
+                    <CommandEmpty>No city found.</CommandEmpty>
+                    <CommandGroup heading="Tunisia">
+                      {tunisianCities.map((city) => {
+                        const isActive = selectedCity === city;
+                        return (
+                          <CommandItem
+                            key={city}
+                            value={city}
+                            onSelect={() => {
+                              setSelectedCity(city);
+                              setLocationPopoverOpen(false);
+                            }}
+                          >
+                            <Check className={`mr-2 h-4 w-4 transition ${isActive ? "opacity-100" : "opacity-0"}`} />
+                            {city}
+                          </CommandItem>
+                        );
+                      })}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1" style={{ msOverflowStyle: "none" }}>
+              {quickFilters.map((option) => {
+                const Icon = option.icon;
+                const isActive = activeQuickFilters.includes(option.id);
+                return (
+                  <Button
+                    key={option.id}
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => toggleQuickFilter(option.id)}
+                    className={`shrink-0 rounded-full border border-border/50 px-3 py-2 text-sm font-medium transition hover:shadow ${
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted/50 text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Icon className="mr-2 h-4 w-4" />
+                    {option.label}
+                  </Button>
+                );
+              })}
             </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <Popover open={categoriesPopoverOpen} onOpenChange={setCategoriesPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-full border-dashed px-4 py-2 text-sm font-medium"
+                  >
+                    Categories ({selectedCategories.includes("All") ? "All" : selectedCategories.length})
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search categories..." />
+                    <CommandList>
+                      <CommandEmpty>No category found.</CommandEmpty>
+                      <CommandGroup>
+                        {categories.map((category) => {
+                          const isChecked = selectedCategories.includes(category);
+                          return (
+                            <CommandItem
+                              key={category}
+                              value={category}
+                              onSelect={() => toggleCategory(category)}
+                            >
+                              <Check className={`mr-2 h-4 w-4 transition ${isChecked ? "opacity-100" : "opacity-0"}`} />
+                              {category}
+                            </CommandItem>
+                          );
+                        })}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                  <div className="flex items-center justify-between border-t border-border/60 p-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8"
+                      onClick={() => setSelectedCategories(["All"])}
+                    >
+                      Clear
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8"
+                      onClick={() => setCategoriesPopoverOpen(false)}
+                    >
+                      Done
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <button
+                type="button"
+                aria-expanded={showCategoryBadges}
+                onClick={() => setShowCategoryBadges((previous) => !previous)}
+                className="flex items-center gap-1 rounded-full border border-border/60 bg-muted/50 px-3 py-1 text-xs font-medium uppercase tracking-wide text-muted-foreground transition hover:text-foreground"
+              >
+                <ChevronDown className={`h-3 w-3 transition-transform ${showCategoryBadges ? "rotate-180" : ""}`} />
+                <span className="max-w-[12rem] truncate">{selectedCategoriesLabel}</span>
+              </button>
+            </div>
+
+            {showCategoryBadges && (
+              selectedCategories.includes("All") ? (
+                <Badge
+                  variant="secondary"
+                  className="w-fit rounded-full bg-muted px-3 py-1 text-xs font-medium uppercase tracking-wide"
+                >
+                  All categories
+                </Badge>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {selectedCategories.map((category) => (
+                    <Badge
+                      key={category}
+                      variant="outline"
+                      className="rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide"
+                    >
+                      {category}
+                    </Badge>
+                  ))}
+                </div>
+              )
+            )}
           </div>
         </div>
 
         {/* Event Tabs */}
-        <Tabs defaultValue={initialTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3">
+  <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 px-4">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-            <TabsTrigger value="proposed">Proposed</TabsTrigger>
-            <TabsTrigger value="past">Past</TabsTrigger>
+            <TabsTrigger value="proposed">Proposed Ideas</TabsTrigger>
           </TabsList>
 
           <TabsContent value="upcoming" className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-start">
               <h2 className="text-lg font-heading font-semibold">
-                {upcomingEvents.length} Events Available
+                {upcoming.length} Events Available
               </h2>
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
             </div>
-            {upcomingEvents.map((event) => (
+            {upcoming.map((event) => (
               <EventCard 
                 key={event.id} 
                 event={event} 
                 onJoin={handleJoinEvent} 
                 onEventClick={handleEventClick}
+                onShare={handleShareEvent}
+                onToggleLike={handleToggleLikeEvent}
               />
             ))}
           </TabsContent>
@@ -268,26 +545,64 @@ const Events = () => {
               </p>
             </div>
             {proposals.map((proposal) => (
-              <ProposalCard key={proposal.id} proposal={proposal} onUpvote={handleUpvoteProposal} />
-            ))}
-          </TabsContent>
-
-          <TabsContent value="past" className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-heading font-semibold">
-                Completed Events
-              </h2>
-            </div>
-            {pastEvents.map((event) => (
-              <EventCard 
-                key={event.id} 
-                event={event} 
-                onEventClick={handleEventClick}
-              />
+              <div key={proposal.id} id={`proposal-${proposal.id}`} className="scroll-mt-[7.5rem]">
+                <ProposalCard
+                  proposal={proposal}
+                  onLike={handleToggleLikeProposal}
+                  onPreRegister={handleTogglePreRegisterProposal}
+                />
+              </div>
             ))}
           </TabsContent>
         </Tabs>
       </div>
+
+      <CommandDialog open={isSearchDialogOpen} onOpenChange={setIsSearchDialogOpen}>
+        <CommandInput placeholder="Search events or proposals..." />
+        <CommandList>
+          <CommandEmpty>No matches found.</CommandEmpty>
+          <CommandGroup heading="Events">
+            {upcoming.map((event) => (
+              <CommandItem
+                key={`search-event-${event.id}`}
+                value={event.title}
+                onSelect={() => {
+                  setIsSearchDialogOpen(false);
+                  handleEventClick(event.id);
+                }}
+              >
+                <CalendarDays className="mr-2 h-4 w-4" />
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">{event.title}</span>
+                  <span className="text-xs text-muted-foreground">{event.date} • {event.location}</span>
+                </div>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          <CommandGroup heading="Proposals">
+            {proposals.map((proposal) => (
+              <CommandItem
+                key={`search-proposal-${proposal.id}`}
+                value={proposal.title ?? proposal.description}
+                onSelect={() => {
+                  setIsSearchDialogOpen(false);
+                  setActiveTab("proposed");
+                  setTimeout(() => {
+                    const target = document.getElementById(`proposal-${proposal.id}`);
+                    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }, 150);
+                }}
+              >
+                <Sparkles className="mr-2 h-4 w-4" />
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">{proposal.title ?? "Community Proposal"}</span>
+                  <span className="text-xs text-muted-foreground">Proposed by {proposal.proposedBy}</span>
+                </div>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
 
       {/* Proposal Form Dialog */}
       <ProposalFormDialog 

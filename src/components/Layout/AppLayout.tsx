@@ -11,25 +11,19 @@ interface AppLayoutProps {
   title?: string;
 }
 
-export const AppLayout = ({ children, title }: AppLayoutProps) => {
+export const AppLayout = ({ children }: AppLayoutProps) => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-card/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between p-4">
-          <div className="flex items-center space-x-3">
-            {title ? (
-              <h1 className="text-lg font-heading font-bold text-foreground">{title}</h1>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <img
-                  src={HimnityLogo}
-                  alt="Himnity logo"
-                  className="h-8 w-auto"
-                />
-                <span className="sr-only">Himnity</span>
-              </div>
-            )}
+          <div className="flex items-center space-x-2">
+            <img
+              src={HimnityLogo}
+              alt="Himnity logo"
+              className="h-8 w-auto"
+            />
+            <span className="text-lg font-heading font-bold text-foreground">Himnity</span>
           </div>
           <div className="flex items-center space-x-2">
             <LanguageToggle />
