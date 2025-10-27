@@ -8,53 +8,54 @@
 
 @layer base {
   :root {
-    /* CivicTech Color Palette */
-    --background: 248 250 252 1; /* #F8FAFC */
-    --foreground: 215 20% 15%; /* Dark gray */
+    /* Community & Volunteering Palette (warm, friendly) */
+    /* Base surfaces */
+    --background: 40 30% 98%; /* warm off-white */
+    --foreground: 215 20% 14%; /* neutral ink */
 
     --card: 0 0% 100%;
-    --card-foreground: 215 20% 15%;
+    --card-foreground: 215 20% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 20% 15%;
+    --popover-foreground: 215 20% 14%;
 
-    /* Primary Blue - Civic Trust */
-    --primary: 217 91% 60%; /* #3A7DFF */
+    /* Primary Teal - Trust, Growth, Community */
+    --primary: 164 60% 40%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 217 91% 70%;
+    --primary-glow: 164 60% 50%;
 
-    /* Secondary Green - Growth & Environment */
-    --secondary: 145 63% 49%; /* #38C172 */
+    /* Secondary Sage */
+    --secondary: 156 34% 45%;
     --secondary-foreground: 0 0% 100%;
 
-    /* Accent Orange - Gamification Energy */
-    --accent: 36 100% 55%; /* #FF9F1C */
+    /* Accent Coral - Warmth & Human touch */
+    --accent: 14 90% 60%;
     --accent-foreground: 0 0% 100%;
 
-    /* Success Lime - Streaks & Progress */
-    --success: 131 68% 67%; /* #6EEB83 */
-    --success-foreground: 215 20% 15%;
+    /* Success Green */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
 
-    --muted: 220 13% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 45%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 60%;
+    --border: 210 16% 90%;
+    --input: 210 16% 90%;
+    --ring: 164 60% 40%;
 
     /* Custom Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 70%));
-    --gradient-civic: linear-gradient(135deg, hsl(217 91% 60%), hsl(145 63% 49%));
-    --gradient-gamification: linear-gradient(135deg, hsl(36 100% 55%), hsl(131 68% 67%));
-    --gradient-hero: linear-gradient(135deg, hsl(217 91% 60% / 0.95), hsl(145 63% 49% / 0.95));
+    --gradient-primary: linear-gradient(135deg, hsl(164 60% 40%), hsl(164 60% 50%));
+    --gradient-civic: linear-gradient(135deg, hsl(164 60% 40%), hsl(14 90% 60%));
+    --gradient-gamification: linear-gradient(135deg, hsl(14 90% 60%), hsl(142 71% 45%));
+    --gradient-hero: linear-gradient(135deg, hsl(164 60% 40% / 0.95), hsl(14 90% 60% / 0.95));
 
     /* Shadows */
-    --shadow-card: 0 4px 6px -1px hsl(217 91% 60% / 0.1), 0 2px 4px -1px hsl(217 91% 60% / 0.06);
-    --shadow-elevated: 0 10px 25px -3px hsl(217 91% 60% / 0.15), 0 4px 6px -2px hsl(217 91% 60% / 0.05);
-    --shadow-glow: 0 0 20px hsl(217 91% 60% / 0.3);
+    --shadow-card: 0 4px 6px -1px hsl(164 60% 40% / 0.1), 0 2px 4px -1px hsl(164 60% 40% / 0.06);
+    --shadow-elevated: 0 10px 25px -3px hsl(164 60% 40% / 0.15), 0 4px 6px -2px hsl(164 60% 40% / 0.05);
+    --shadow-glow: 0 0 20px hsl(164 60% 40% / 0.3);
 
     --radius: 0.5rem;
 
@@ -72,7 +73,7 @@
 
     --sidebar-border: 220 13% 91%;
 
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 164 60% 40%;
   }
 
   .dark {
@@ -85,8 +86,8 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 164 60% 40%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -94,15 +95,15 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 14 90% 60%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 164 60% 40%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -137,6 +138,12 @@
 
 /* Custom Components */
 @layer components {
+  /* Section and layout helpers for consistent spacing */
+  .section { @apply space-y-4 md:space-y-6; }
+  .section-y { @apply py-6 md:py-8; }
+  .section-title { @apply text-xl md:text-2xl font-heading font-bold text-foreground; }
+  .section-grid { @apply grid gap-4 md:gap-6; }
+
   .card-civic {
     @apply bg-card rounded-xl shadow-[var(--shadow-card)] border border-border;
   }

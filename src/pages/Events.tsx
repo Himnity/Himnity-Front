@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 // Mock events data
 const upcomingEvents = [
@@ -146,6 +146,8 @@ const Events = () => {
   const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false);
   const [proposals, setProposals] = useState(proposedEvents);
   const [showAllCategories, setShowAllCategories] = useState(false);
+  const [searchParams] = useSearchParams();
+  const initialTab = (searchParams.get("tab") as "upcoming" | "proposed" | "past") || "upcoming";
 
   const handleJoinEvent = (eventId: string) => {
     toast.success("Join request sent! You'll be notified when the organizer reviews your request.", {
@@ -158,20 +160,19 @@ const Events = () => {
   };
 
   const handleUpvoteProposal = (proposalId: string) => {
-    setProposals(prevProposals => 
-      prevProposals.map(proposal => {
-        if (proposal.id === proposalId) {
-          const wasUpvoted = proposal.isUpvoted;
+    setProposals(prevProposals =>
+      prevProposals.map(p => {
+        if (p.id === proposalId) {
+          const wasUpvoted = p.isUpvoted;
           return {
-            ...proposal,
-            upvotes: wasUpvoted ? proposal.upvotes - 1 : proposal.upvotes + 1,
-            isUpvoted: !wasUpvoted
+            ...p,
+            upvotes: wasUpvoted ? p.upvotes - 1 : p.upvotes + 1,
+            isUpvoted: !wasUpvoted,
           };
         }
-        return proposal;
+        return p;
       })
     );
-    
     toast.success("Vote updated!", {
       description: "Your support helps NGOs see which ideas the community wants most."
     });
@@ -180,8 +181,6 @@ const Events = () => {
   const handleProposeEvent = () => {
     setIsProposalDialogOpen(true);
   };
-
-
 
   return (
     <AppLayout title="Events">
@@ -222,7 +221,7 @@ const Events = () => {
         </div>
 
         {/* Event Tabs */}
-        <Tabs defaultValue="upcoming" className="space-y-4">
+        <Tabs defaultValue={initialTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
             <TabsTrigger value="proposed">Proposed</TabsTrigger>

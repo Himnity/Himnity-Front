@@ -71,3 +71,12 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Design updates (Oct 2025)
+
+- Mobile-first Home simplified: The Home page now focuses on a single, clear action — sharing a community idea. We removed the hero, quick actions, milestones, impact tree, and noisy stats per feedback.
+- Idea-first flow: A concise description explains proposals, with two buttons: “Share your idea” (opens the proposal dialog) and “See community ideas” (deep links to Events > Proposed via `?tab=proposed`).
+- Consistent spacing: Introduced section helpers in `src/index.css` (`.section`, `.section-grid`, `.section-title`) for uniform mobile spacing.
+- Warm community palette: Teal/green primary with coral accent applied via CSS variables in `src/index.css`. Tailwind colors read from these variables (see `tailwind.config.ts`).
+
+Tip: To preview proposed ideas directly, open `/events?tab=proposed`.
