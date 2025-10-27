@@ -187,4 +187,27 @@
   .streak-flame {
     @apply text-accent animate-pulse;
   }
+
+  /* Subtle tree sway animation for ImpactTree icon */
+  @keyframes tree-sway {
+    0%, 100% { transform: rotate(-2deg) translateY(0); }
+    50% { transform: rotate(2deg) translateY(-2px); }
+  }
+  .tree-sway {
+    animation: tree-sway 4s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  /* Falling leaves animation */
+  @keyframes leaf-fall {
+    0% { transform: translateY(-10px) translateX(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    50% { transform: translateY(30px) translateX(-6px) rotate(-20deg); }
+    100% { transform: translateY(70px) translateX(6px) rotate(20deg); opacity: 0; }
+  }
+  .leaf {
+    animation: leaf-fall 3.5s ease-in-out infinite;
+    filter: drop-shadow(0 2px 2px rgba(16,185,129,0.25));
+    pointer-events: none;
+  }
 }

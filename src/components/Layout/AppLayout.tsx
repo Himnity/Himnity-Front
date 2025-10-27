@@ -4,7 +4,7 @@ import { Search, Bell } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { Button } from "@/components/ui/button";
-import HimnityLogo from "@/assets/Himnity-Logo.png";
+import HimnityLogo from "@/assets/Himnity-Logo1.png";
 
 interface AppLayoutProps {
   children: ReactNode;

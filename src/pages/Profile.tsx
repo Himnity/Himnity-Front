@@ -11,6 +11,7 @@ import { StreakCounter } from "@/components/Gamification/StreakCounter";
 import { BadgeGallery } from "@/components/Gamification/BadgeGallery";
 import { Edit, Calendar, Clock, Star, Award } from "lucide-react";
 import { toast } from "sonner";
+import { useMemo } from "react";
 
 // Mock user data
 const user = {
@@ -21,7 +22,7 @@ const user = {
   nextLevelXP: 1000,
   streakCount: 12,
   joinDate: "March 2025",
-  location: "San Francisco, CA",
+  location: "Sousse, Tunisia",
   bio: "Passionate about environmental causes and community building. Love organizing clean-up events!"
 };
 
@@ -64,7 +65,7 @@ const availableBadges = [
     id: "7", 
     name: "Mentor", 
     description: "Lead 10 workshops", 
-    icon: "👨‍�", 
+    icon: "🧑‍🏫", 
     progress: 0, 
     requirement: 10, 
     howToObtain: "Organize or lead educational workshops and training sessions"
@@ -221,6 +222,34 @@ const pendingRequests = [
   }
 ];
 
+const TreeSection = ({ currentXP, level }: { currentXP: number; level: number }) => {
+  const treeType: "pine" = "pine";
+  const status = useMemo(() => {
+    if (currentXP < 100) return "Seedling";
+    if (currentXP < 500) return "Growing";
+    if (currentXP < 1000) return "Thriving";
+    return "Flourishing";
+  }, [currentXP]);
+
+  return (
+    <div className="space-y-3 text-center">
+      <div>
+        <h4 className="text-sm font-heading font-semibold text-foreground">Your Tree</h4>
+      </div>
+
+      <ImpactTree
+        impactPoints={currentXP}
+        level={level}
+        compact
+        big
+        treeType={treeType}
+        status={status}
+        howToGrowUrl="https://en.wikipedia.org/wiki/Tree_care"
+      />
+    </div>
+  );
+};
+
 const Profile = () => {
   const handleEditProfile = () => {
     toast.info("Profile editing feature coming soon!");
@@ -240,30 +269,35 @@ const Profile = () => {
   return (
     <AppLayout title="Profile">
       <div className="space-y-6 p-4">
-        {/* Profile Header */}
-        <Card className="p-6 card-elevated gradient-civic">
-          <div className="flex items-start space-x-4 text-white">
-            <Avatar className="w-20 h-20 border-4 border-white/20">
-              <AvatarFallback className="text-2xl font-bold bg-white/20 text-white">
+        {/* Profile Header - harmonized with Hall of Fame palette */}
+        <Card className="relative overflow-hidden p-6 rounded-xl border border-border/60 bg-gradient-to-br from-primary/10 via-primary/5 to-primary/10 shadow-sm">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/20 blur-2xl" />
+          <div className="pointer-events-none absolute -left-10 -bottom-12 h-28 w-28 rounded-full bg-primary/15 blur-2xl" />
+          <div className="relative flex items-start gap-4">
+            <Avatar className="h-20 w-20 ring-4 ring-emerald-400/50 shadow-[0_0_25px_rgba(16,185,129,0.25)]">
+              <AvatarFallback className="text-2xl font-bold bg-muted text-foreground">
                 {user.avatar}
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1 space-y-2">
-              <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-heading font-bold">{user.name}</h1>
-                <Button 
-                  variant="ghost" 
+            <div className="flex-1 space-y-2 min-w-0">
+              <div className="flex items-center justify-between gap-3">
+                <h1 className="break-words text-2xl leading-tight font-heading font-bold text-foreground">{user.name}</h1>
+                <Button
+                  variant="ghost"
                   size="icon"
                   onClick={handleEditProfile}
-                  className="text-white hover:bg-white/20"
+                  className="hover:bg-primary/10"
                 >
-                  <Edit className="h-4 w-4" />
+                  <Edit className="h-4 w-4 text-primary" />
                 </Button>
               </div>
-              <p className="text-white/90 text-sm">{user.bio}</p>
-              <div className="flex items-center space-x-4 text-sm text-white/75">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                 <span>📍 {user.location}</span>
                 <span>📅 Joined {user.joinDate}</span>
+              </div>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <Badge className="rounded-full bg-primary/15 text-primary hover:bg-primary/20">Level {user.level}</Badge>
+                <Badge className="rounded-full bg-success/15 text-success hover:bg-success/20">{user.currentXP}/{user.nextLevelXP} XP</Badge>
               </div>
             </div>
           </div>
@@ -272,10 +306,7 @@ const Profile = () => {
         {/* Stats Overview */}
         <div className="grid grid-cols-2 gap-4">
           <Card className="p-4 card-civic">
-            <ImpactTree 
-              impactPoints={user.currentXP}
-              level={user.level}
-            />
+            <TreeSection currentXP={user.currentXP} level={user.level} />
           </Card>
           <Card className="p-4 card-civic">
             <MilestoneTracker milestones={milestones} />
@@ -284,26 +315,23 @@ const Profile = () => {
 
         {/* Impact Stats */}
         <Card className="p-6 card-civic">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <h3 className="text-lg font-heading font-semibold">Your Impact</h3>
-            <Button variant="outline" size="sm" className="text-xs">
-              View All
-            </Button>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="text-center">
+            <div className="rounded-xl border border-primary/20 bg-primary/10 p-3 text-center">
               <div className="text-2xl font-bold text-primary">{userStats.eventsJoined}</div>
               <div className="text-sm text-muted-foreground">Events Joined</div>
             </div>
-            <div className="text-center">
+            <div className="rounded-xl border border-secondary/20 bg-secondary/10 p-3 text-center">
               <div className="text-2xl font-bold text-secondary">{userStats.hoursContributed}</div>
               <div className="text-sm text-muted-foreground">Hours Contributed</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-accent">{userStats.peopleHelped}</div>
+            <div className="rounded-xl border border-success/20 bg-success/10 p-3 text-center">
+              <div className="text-2xl font-bold text-success">{userStats.peopleHelped}</div>
               <div className="text-sm text-muted-foreground">People Helped</div>
             </div>
-            <div className="text-center">
+            <div className="rounded-xl border border-success/20 bg-success/10 p-3 text-center">
               <div className="text-2xl font-bold text-success">{userStats.proposalsAdopted}</div>
               <div className="text-sm text-muted-foreground">Ideas Adopted</div>
             </div>
@@ -401,7 +429,7 @@ const Profile = () => {
           <TabsContent value="my-events" className="space-y-4">
             <Tabs defaultValue="requests" className="space-y-3">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="requests">Join Requests ({pendingRequests.length})</TabsTrigger>
+                <TabsTrigger value="requests">Requested ({pendingRequests.length})</TabsTrigger>
                 <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
                 <TabsTrigger value="past">Past Events</TabsTrigger>
               </TabsList>
@@ -417,7 +445,7 @@ const Profile = () => {
                             by {request.organizer} • Event: {request.eventDate}
                           </div>
                           <div className="text-xs text-muted-foreground mt-1">
-                            Requested: {request.requestDate}
+                            Requested
                           </div>
                           {request.status === "Rejected" && request.reason && (
                             <div className="text-xs text-red-600 mt-1">
