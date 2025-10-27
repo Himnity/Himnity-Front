@@ -532,15 +532,6 @@ const Home = () => {
                     <Sparkles className="mr-2 h-4 w-4" />
                     See other proposals
                   </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={handleProposeIdea}
-                    className="rounded-full bg-[#F7B500] text-white shadow-sm hover:bg-[#e6a400]"
-                  >
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    Start new idea
-                  </Button>
                 </div>
               </div>
             </div>
