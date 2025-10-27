@@ -5,21 +5,24 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Events from "./pages/Events";
-import EventDetails from "./pages/EventDetails";
-import Storybook from "./pages/Storybook";
-import HallOfFame from "./pages/HallOfFame";
-import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
+import { Suspense, lazy } from "react";
+
+// Route-level code splitting
+const Home = lazy(() => import("./pages/Home"));
+const Events = lazy(() => import("./pages/Events"));
+const EventDetails = lazy(() => import("./pages/EventDetails"));
+const Storybook = lazy(() => import("./pages/Storybook"));
+const HallOfFame = lazy(() => import("./pages/HallOfFame"));
+const Profile = lazy(() => import("./pages/Profile"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 // NGO Pages
-import NGODashboard from "./pages/NGO/NGODashboard";
-import NGOProposals from "./pages/NGO/NGOProposals";
-import NGOEvents from "./pages/NGO/NGOEvents";
-import NGOCreateEvent from "./pages/NGO/NGOCreateEvent";
-import NGOAttendees from "./pages/NGO/NGOAttendees";
-import NGOEventRequests from "./pages/NGO/NGOEventRequests";
-import NGOProfile from "./pages/NGO/NGOProfile";
+const NGODashboard = lazy(() => import("./pages/NGO/NGODashboard"));
+const NGOProposals = lazy(() => import("./pages/NGO/NGOProposals"));
+const NGOEvents = lazy(() => import("./pages/NGO/NGOEvents"));
+const NGOCreateEvent = lazy(() => import("./pages/NGO/NGOCreateEvent"));
+const NGOAttendees = lazy(() => import("./pages/NGO/NGOAttendees"));
+const NGOEventRequests = lazy(() => import("./pages/NGO/NGOEventRequests"));
+const NGOProfile = lazy(() => import("./pages/NGO/NGOProfile"));
 
 const queryClient = new QueryClient();
 
@@ -31,7 +34,8 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
+            <Suspense fallback={<div className="p-6 text-center text-sm text-muted-foreground">Loading…</div>}>
+              <Routes>
               {/* Individual User Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/events" element={<Events />} />
@@ -52,7 +56,8 @@ const App = () => (
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>

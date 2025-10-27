@@ -63,6 +63,8 @@ export const EventCard = ({ event, onJoin, onEventClick, onShare, onToggleLike }
           src={event.imageUrl || communityEventImage}
           alt={event.title}
           className="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
         />
         <div className="absolute top-3 left-3">
           <Badge variant="secondary" className="badge-civic bg-card/90 text-foreground">

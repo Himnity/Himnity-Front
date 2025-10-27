@@ -13,9 +13,13 @@ import {
   Heart,
   Award,
   TrendingUp,
+  Leaf,
+  Sparkles,
+  CalendarDays,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const impactReports = [
   {
@@ -384,6 +388,8 @@ const ImageWithFallback = ({ src, alt, className }: ImageProps) => {
       src={currentSrc}
       alt={alt}
       className={className}
+      loading="lazy"
+      decoding="async"
       onError={() => setCurrentSrc(fallbackImage)}
     />
   );
@@ -401,16 +407,24 @@ const Storybook = () => {
 
   return (
     <AppLayout title="Storybook">
-      <div className="space-y-6 pb-20">
-        <div className="px-4 pt-6 md:px-6">
-          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">A Story of Unity</h1>
-              <p className="text-muted-foreground">{month}</p>
-            </div>
-            <div className="flex flex-col gap-3 md:items-end">
+      <div className="space-y-8 pb-24">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden rounded-none bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-100 px-4 pt-10 pb-14 md:px-6">
+          {/* subtle floating leaves */}
+          <Leaf className="absolute left-6 top-8 h-6 w-6 text-emerald-400/40 animate-pulse" />
+          <Leaf className="absolute right-10 top-14 h-8 w-8 text-emerald-500/30 animate-pulse" />
+          <Leaf className="absolute left-1/2 bottom-6 h-5 w-5 -translate-x-1/2 text-emerald-400/40 animate-pulse" />
+          <div className="relative mx-auto max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-600">Our shared journey</p>
+            <h1 className="mt-2 bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-3xl font-heading font-extrabold text-transparent md:text-4xl">
+              “This isn’t just an app — it’s a community that dared to dream together.”
+            </h1>
+            <p className="mt-3 text-sm text-emerald-900/70">
+              Over the months, thousands of hands joined to solve problems, plant ideas, and grow hope.
+            </p>
+            <div className="mt-5 flex flex-col items-center justify-center gap-3 md:flex-row md:gap-4">
               <Select value={selectedCity} onValueChange={(value: string) => setSelectedCity(value as typeof selectedCity)}>
-                <SelectTrigger className="w-full md:w-56">
+                <SelectTrigger className="w-56">
                   <SelectValue placeholder="Choose a region" />
                 </SelectTrigger>
                 <SelectContent>
@@ -421,85 +435,135 @@ const Storybook = () => {
                   ))}
                 </SelectContent>
               </Select>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-accent text-accent hover:bg-accent/10"
-                  onClick={handleShare}
-                >
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Share
-                </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-emerald-500 text-emerald-700 hover:bg-emerald-500/10"
+                onClick={handleShare}
+              >
+                <Share2 className="mr-2 h-4 w-4" /> Share {city}
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* Reimagined Journey — From Spark to Movement */}
+        <section className="px-4 md:px-6">
+          <h2 className="mb-4 text-lg font-semibold text-foreground">From Spark to Movement</h2>
+          <div className="relative mx-auto max-w-5xl">
+            {/* subtle background path ribbon */}
+            <div className="pointer-events-none absolute inset-x-4 -top-2 -bottom-2 -z-10 rounded-3xl bg-gradient-to-r from-emerald-100/40 via-emerald-50/30 to-teal-100/40 blur-xl" />
+            <div className="grid gap-4 sm:grid-cols-3">
+              {/* Spark */}
+              <div className="group relative overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-amber-50 to-white p-5 shadow-sm transition hover:shadow-md">
+                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-amber-200/30 blur-2xl" />
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="relative">
+                    <span className="absolute -inset-1 rounded-full bg-amber-400/30 blur" />
+                    <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-2 ring-amber-300/60">
+                      <Leaf className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm font-heading font-semibold text-foreground">The Spark</div>
+                    <div className="text-xs text-muted-foreground">Ideas that mattered. First steps toward real change.</div>
+                  </div>
+                </div>
+                <p className="text-sm text-foreground/90">Neighbors proposed, rallied, and showed up. Small actions ignited a shared purpose.</p>
+                <div className="mt-4 inline-flex items-center rounded-full border border-amber-300/60 bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-700">Idea ➝ Action</div>
+              </div>
+
+              {/* Growth */}
+              <div className="group relative overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-emerald-50 to-white p-5 shadow-sm transition hover:shadow-md">
+                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-emerald-200/30 blur-2xl" />
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="relative">
+                    <span className="absolute -inset-1 rounded-full bg-emerald-400/30 blur" />
+                    <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-2 ring-emerald-300/60">
+                      <TreePine className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm font-heading font-semibold text-foreground">The Growth</div>
+                    <div className="text-xs text-muted-foreground">NGOs joined hands. Momentum turned into programs.</div>
+                  </div>
+                </div>
+                <p className="text-sm text-foreground/90">Partnerships formed. Projects got resources, structure, and measurable impact.</p>
+                <div className="mt-4 inline-flex items-center rounded-full border border-emerald-300/60 bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700">Passion ➝ Partnership</div>
+              </div>
+
+              {/* Movement */}
+              <div className="group relative overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-teal-50 to-white p-5 shadow-sm transition hover:shadow-md">
+                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-teal-200/30 blur-2xl" />
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="relative">
+                    <span className="absolute -inset-1 rounded-full bg-teal-400/30 blur" />
+                    <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-teal-100 text-teal-700 ring-2 ring-teal-300/60">
+                      <MapPin className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm font-heading font-semibold text-foreground">The Movement</div>
+                    <div className="text-xs text-muted-foreground">Across regions — people cleaned, built, planted, helped.</div>
+                  </div>
+                </div>
+                <p className="text-sm text-foreground/90">A living map of solidarity. Not just numbers — real faces, places, and change.</p>
+                <div className="mt-4 inline-flex items-center rounded-full border border-teal-300/60 bg-teal-50 px-2.5 py-1 text-[11px] font-medium text-teal-700">Local ➝ Nationwide</div>
               </div>
             </div>
           </div>
-
-          <Card className="overflow-hidden border-accent/30 bg-gradient-to-r from-accent/20 to-accent/10">
-            <CardContent className="p-0">
-              <div className="relative flex h-32 items-center justify-center bg-gradient-to-r from-accent to-accent/80">
-                <div className="text-center text-accent-foreground">
-                  <h2 className="text-2xl font-bold">{city} Civic Impact</h2>
-                  <p className="text-accent-foreground/80">{month}</p>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        </section>
 
         <div className="px-4 md:px-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">Key Impact Metrics</h2>
-            <Button variant="outline" size="sm" className="text-xs">
-              Show All
-            </Button>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground">Highlights & Achievements</h2>
           </div>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="mx-auto grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4">
             <Card className="border-border bg-card">
               <CardContent className="px-4 pb-4 pt-4 text-center">
-                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/20 text-blue-400">
+                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+                  <TrendingUp className="h-5 w-5" />
+                </div>
+                <div className="text-xl font-bold text-foreground">1,200+</div>
+                <div className="text-sm text-muted-foreground">Ideas Proposed</div>
+              </CardContent>
+            </Card>
+            <Card className="border-border bg-card">
+              <CardContent className="px-4 pb-4 pt-4 text-center">
+                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
                   <Users className="h-5 w-5" />
                 </div>
-                <div className="text-xl font-bold text-foreground">{metrics.totalParticipants}</div>
-                <div className="text-sm text-muted-foreground">Total Participants</div>
+                <div className="text-xl font-bold text-foreground">700+</div>
+                <div className="text-sm text-muted-foreground">Active Volunteers</div>
               </CardContent>
             </Card>
             <Card className="border-border bg-card">
               <CardContent className="px-4 pb-4 pt-4 text-center">
-                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-purple-500/20 text-purple-400">
-                  <Clock className="h-5 w-5" />
+                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+                  <MapPin className="h-5 w-5" />
                 </div>
-                <div className="text-xl font-bold text-foreground">{metrics.volunteerHours}</div>
-                <div className="text-sm text-muted-foreground">Volunteer Hours</div>
+                <div className="text-xl font-bold text-foreground">60+</div>
+                <div className="text-sm text-muted-foreground">Communities Impacted</div>
               </CardContent>
             </Card>
             <Card className="border-border bg-card">
               <CardContent className="px-4 pb-4 pt-4 text-center">
-                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-green-500/20 text-green-400">
-                  <Recycle className="h-5 w-5" />
+                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+                  <Award className="h-5 w-5" />
                 </div>
-                <div className="text-xl font-bold text-foreground">{metrics.kgTrashCollected}kg</div>
-                <div className="text-sm text-muted-foreground">Trash Collected</div>
-              </CardContent>
-            </Card>
-            <Card className="border-border bg-card">
-              <CardContent className="px-4 pb-4 pt-4 text-center">
-                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/20 text-orange-400">
-                  <TreePine className="h-5 w-5" />
-                </div>
-                <div className="text-xl font-bold text-foreground">{metrics.treesPlanted}</div>
-                <div className="text-sm text-muted-foreground">Trees Planted</div>
+                <div className="text-xl font-bold text-foreground">25</div>
+                <div className="text-sm text-muted-foreground">NGOs Partnered</div>
               </CardContent>
             </Card>
           </div>
         </div>
 
+        {/* Impact Stories */}
         <div className="px-4 md:px-6">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">Spotlight Events</h2>
+          <h2 className="mb-4 text-lg font-semibold text-foreground">Impact Stories</h2>
           <div className="space-y-6">
             {events.map((event) => (
-              <Card key={event.id} className="border-border bg-card">
+              <Card key={event.id} className="border-border bg-card/80 backdrop-blur">
                 <CardHeader className="p-4 pb-0">
                   <CardTitle className="text-lg text-foreground">{event.title}</CardTitle>
                   <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
@@ -541,68 +605,10 @@ const Storybook = () => {
           </div>
         </div>
 
-        <div className="px-4 md:px-6">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">Notable Contributions</h2>
-          <Card className="border-border bg-card">
-            <CardHeader className="flex items-center gap-2 p-4 pb-0">
-              <Award className="h-5 w-5 text-accent" />
-              <CardTitle className="text-base text-foreground">Top Organizers</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 p-4 pt-4">
-              {organizers.map((organizer, index) => (
-                <div key={organizer.name} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm ${
-                        medalStyles[index] ?? medalStyles[2]
-                      }`}
-                    >
-                      {medalLabels[index] ?? medalLabels[2]}
-                    </div>
-                    <div>
-                      <div className="font-medium text-foreground">{organizer.name}</div>
-                      <div className="text-sm text-muted-foreground">{organizer.events} events</div>
-                    </div>
-                  </div>
-                  <Badge variant="secondary" className="bg-accent/20 text-accent">
-                    {organizer.hours}h
-                  </Badge>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-          <Card className="mt-4 border-border bg-card">
-            <CardHeader className="flex items-center gap-2 p-4 pb-0">
-              <Heart className="h-5 w-5 text-accent" />
-              <CardTitle className="text-base text-foreground">Trusted Members</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 p-4 pt-4">
-              {members.map((member, index) => (
-                <div key={member.name} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm ${
-                        medalStyles[index] ?? medalStyles[2]
-                      }`}
-                    >
-                      {medalLabels[index] ?? medalLabels[2]}
-                    </div>
-                    <div>
-                      <div className="font-medium text-foreground">{member.name}</div>
-                      <div className="text-sm text-muted-foreground">{member.attendance} attendance</div>
-                    </div>
-                  </div>
-                  <Badge variant="secondary" className="bg-accent/20 text-accent">
-                    {member.points} pts
-                  </Badge>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
+        {/* Notable Contributions section removed per request */}
 
         <div className="px-4 md:px-6">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">Event Locations</h2>
+          <h2 className="mb-4 text-lg font-semibold text-foreground">Impact Across Regions</h2>
           <Card className="border-border bg-card">
             <CardContent className="p-6">
               <TunisiaHeatmap
@@ -613,6 +619,53 @@ const Storybook = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Closing CTA — Polished split choices */}
+        <section className="px-4 pb-8 md:px-6">
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-card/80 p-5 backdrop-blur">
+            <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl" />
+            <div className="pointer-events-none absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-amber-300/20 blur-3xl" />
+
+            <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2">
+              {/* Propose */}
+              <div className="relative overflow-hidden rounded-xl border border-border/60 bg-gradient-to-br from-emerald-50 to-white p-5">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-2 ring-emerald-300/60">
+                    <Sparkles className="h-5 w-5" />
+                  </div>
+                  <div className="text-base font-heading font-semibold text-foreground">Propose a New Idea</div>
+                </div>
+                <p className="text-sm text-muted-foreground">Got a spark? Share it. The community and NGOs can bring it to life.</p>
+                <div className="mt-4">
+                  <Button onClick={() => (window.location.href = "/events?tab=proposed")} className="gradient-gamification text-white">
+                    Share your idea
+                  </Button>
+                </div>
+              </div>
+
+              {/* Join */}
+              <div className="relative overflow-hidden rounded-xl border border-border/60 bg-gradient-to-br from-amber-50 to-white p-5">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-2 ring-amber-300/60">
+                    <CalendarDays className="h-5 w-5" />
+                  </div>
+                  <div className="text-base font-heading font-semibold text-foreground">Join an Upcoming Event</div>
+                </div>
+                <p className="text-sm text-muted-foreground">Ready to help? Find something near you and jump right in.</p>
+                <div className="mt-4">
+                  <Button variant="outline" onClick={() => (window.location.href = "/events?tab=upcoming")} className="border-emerald-300/60 text-foreground hover:bg-emerald-50">
+                    Browse events
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Quote */}
+            <div className="mx-auto mt-6 max-w-2xl text-center">
+              <p className="text-sm font-heading text-foreground/90">“Every event is a page in our shared story. Let’s write the next one — together.”</p>
+            </div>
+          </div>
+        </section>
       </div>
     </AppLayout>
   );

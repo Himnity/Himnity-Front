@@ -4,7 +4,7 @@
 
 /* CivicTech Gamified App Design System - All colors MUST be HSL. */
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+/* Google Fonts are preloaded via link tags in index.html to reduce CSS blocking. */
 
 @layer base {
   :root {

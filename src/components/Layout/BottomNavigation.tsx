@@ -1,4 +1,12 @@
 import { NavLink } from "react-router-dom";
+// Warm route chunks on hover to improve perceived performance
+const preloaders: Record<string, () => Promise<any>> = {
+  "/": () => import("@/pages/Home"),
+  "/events": () => import("@/pages/Events"),
+  "/storybook": () => import("@/pages/Storybook"),
+  "/hall-of-fame": () => import("@/pages/HallOfFame"),
+  "/profile": () => import("@/pages/Profile"),
+};
 import { Home, Calendar, BookOpen, Trophy, User } from "lucide-react";
 
 const navigationItems = [
@@ -17,6 +25,7 @@ export const BottomNavigation = () => {
           <NavLink
             key={path}
             to={path}
+            onMouseEnter={() => preloaders[path]?.()}
             className={({ isActive }) =>
               `flex flex-col items-center justify-center space-y-1 transition-colors ${
                 isActive

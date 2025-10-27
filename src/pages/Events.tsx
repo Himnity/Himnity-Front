@@ -334,60 +334,62 @@ const Events = () => {
     <AppLayout>
       <div className="space-y-4 pb-4">
         <div className="sticky top-[4.5rem] z-30 space-y-2 bg-background/95 px-4 py-3 backdrop-blur-md">
-          <div className="flex flex-wrap items-center justify-between gap-2">
+          {/* Top row: Search (left) + horizontally scrollable Location + Quick Filters */}
+          <div className="flex items-center gap-2">
+            {/* Search button on the left */}
             <Button
               size="icon"
               variant="ghost"
               onClick={() => setIsSearchDialogOpen(true)}
-              className="h-10 w-10 rounded-full border border-border/60 bg-muted/40 text-muted-foreground transition hover:text-foreground"
+              className="shrink-0 h-10 w-10 rounded-full border border-border/60 bg-muted/40 text-muted-foreground transition hover:text-foreground"
               aria-label="Search events and proposals"
             >
               <Search className="h-4 w-4" />
             </Button>
-            <Popover open={locationPopoverOpen} onOpenChange={setLocationPopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="flex w-full flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-border/60 bg-primary/10 px-4 py-2 text-sm font-medium text-primary shadow-sm transition hover:bg-primary/20 md:w-auto md:flex-none"
-                >
-                  <MapPin className="h-4 w-4" />
-                  {selectedCity}
-                  <span className="text-muted-foreground">|</span>
-                  <span className="text-muted-foreground">Change</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-64 p-0" align="end">
-                <Command>
-                  <CommandInput placeholder="Search cities..." />
-                  <CommandList>
-                    <CommandEmpty>No city found.</CommandEmpty>
-                    <CommandGroup heading="Tunisia">
-                      {tunisianCities.map((city) => {
-                        const isActive = selectedCity === city;
-                        return (
-                          <CommandItem
-                            key={city}
-                            value={city}
-                            onSelect={() => {
-                              setSelectedCity(city);
-                              setLocationPopoverOpen(false);
-                            }}
-                          >
-                            <Check className={`mr-2 h-4 w-4 transition ${isActive ? "opacity-100" : "opacity-0"}`} />
-                            {city}
-                          </CommandItem>
-                        );
-                      })}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-2 overflow-x-auto pb-1" style={{ msOverflowStyle: "none" }}>
+            {/* Scrollable row containing Location and Quick Filters */}
+            <div className="flex-1 flex items-center gap-2 overflow-x-auto pb-1" style={{ msOverflowStyle: "none" }}>
+              {/* Location picker (click city name to open list) */}
+              <Popover open={locationPopoverOpen} onOpenChange={setLocationPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="shrink-0 flex items-center gap-2 whitespace-nowrap rounded-full border border-border/60 bg-muted/50 px-4 py-2 text-sm font-medium shadow-sm transition hover:bg-muted/70"
+                  >
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-primary">{selectedCity}</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search cities..." />
+                    <CommandList>
+                      <CommandEmpty>No city found.</CommandEmpty>
+                      <CommandGroup heading="Tunisia">
+                        {tunisianCities.map((city) => {
+                          const isActive = selectedCity === city;
+                          return (
+                            <CommandItem
+                              key={city}
+                              value={city}
+                              onSelect={() => {
+                                setSelectedCity(city);
+                                setLocationPopoverOpen(false);
+                              }}
+                            >
+                              <Check className={`mr-2 h-4 w-4 transition ${isActive ? "opacity-100" : "opacity-0"}`} />
+                              {city}
+                            </CommandItem>
+                          );
+                        })}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+
+              {/* Quick filters */}
               {quickFilters.map((option) => {
                 const Icon = option.icon;
                 const isActive = activeQuickFilters.includes(option.id);
@@ -409,7 +411,9 @@ const Events = () => {
                 );
               })}
             </div>
+          </div>
 
+          <div className="flex flex-col gap-1.5">
             <div className="flex flex-wrap items-center gap-2">
               <Popover open={categoriesPopoverOpen} onOpenChange={setCategoriesPopoverOpen}>
                 <PopoverTrigger asChild>

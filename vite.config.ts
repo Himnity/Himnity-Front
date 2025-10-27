@@ -24,4 +24,22 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("react-router-dom") || id.includes("react-dom") || id.includes("react")) {
+              return "vendor-react";
+            }
+            if (id.includes("@radix-ui")) return "vendor-radix";
+            if (id.includes("lucide-react")) return "vendor-icons";
+            if (id.includes("cmdk")) return "vendor-cmdk";
+            if (id.includes("recharts")) return "vendor-charts";
+            return "vendor";
+          }
+        },
+      },
+    },
+  },
 }));
