@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppLayout } from "@/components/Layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -275,6 +275,7 @@ const ImageWithFallback = ({ src, alt, className }: ImageProps) => {
 
 const Storybook = () => {
   const [selectedCity, setSelectedCity] = useState(impactReports[0].city);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const activeReport =
     impactReports.find((report) => report.city === selectedCity) ?? impactReports[0];
@@ -283,21 +284,48 @@ const Storybook = () => {
 
   const handleShare = () => toast.success(`${city} impact report ready to share!`);
 
+  // Autoplay Month's Summary video when it enters the viewport; pause when it leaves
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+
+    // Ensure video starts paused until visible
+    try { el.pause(); } catch {}
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        const video = videoRef.current;
+        if (!video) return;
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+          // Attempt play; ignore if blocked
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: [0, 0.5, 1] }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [selectedCity]);
+
   return (
     <AppLayout title="Storybook">
       <div className="space-y-8 pb-24">
         {/* Hero Section */}
-        <section className="relative overflow-hidden rounded-none bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-100 px-4 pt-10 pb-14 md:px-6">
+        <section className="relative overflow-hidden rounded-none bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-100 dark:from-emerald-950/30 dark:via-emerald-900/20 dark:to-teal-950/30 px-4 pt-10 pb-14 md:px-6">
           {/* subtle floating leaves */}
-          <Leaf className="absolute left-6 top-8 h-6 w-6 text-emerald-400/40 animate-pulse" />
-          <Leaf className="absolute right-10 top-14 h-8 w-8 text-emerald-500/30 animate-pulse" />
-          <Leaf className="absolute left-1/2 bottom-6 h-5 w-5 -translate-x-1/2 text-emerald-400/40 animate-pulse" />
+          <Leaf className="absolute left-6 top-8 h-6 w-6 text-emerald-400/40 dark:text-emerald-300/30 animate-pulse" />
+          <Leaf className="absolute right-10 top-14 h-8 w-8 text-emerald-500/30 dark:text-emerald-200/30 animate-pulse" />
+          <Leaf className="absolute left-1/2 bottom-6 h-5 w-5 -translate-x-1/2 text-emerald-400/40 dark:text-emerald-300/30 animate-pulse" />
           <div className="relative mx-auto max-w-3xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-600">By us, For us</p>
-            <h1 className="mt-2 bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-3xl font-heading font-extrabold text-transparent md:text-4xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-300">By us, For us</p>
+            <h1 className="mt-2 bg-gradient-to-r from-emerald-700 to-emerald-500 dark:from-emerald-300 dark:to-emerald-400 bg-clip-text text-3xl font-heading font-extrabold text-transparent md:text-4xl">
               A Story of Impact and Unity
             </h1>
-            <p className="mt-3 text-sm text-emerald-900/70">
+            <p className="mt-3 text-sm text-muted-foreground">
               A dive into this month's impact
             </p>
             <div className="mt-5 flex flex-col items-center justify-center gap-3 md:flex-row md:gap-4">
@@ -316,7 +344,7 @@ const Storybook = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-emerald-500 text-emerald-700 hover:bg-emerald-500/10"
+                className="border-emerald-500 text-emerald-700 hover:bg-emerald-500/10 dark:border-emerald-400 dark:text-emerald-200 dark:hover:bg-emerald-400/10"
                 onClick={handleShare}
               >
                 <Share2 className="mr-2 h-4 w-4" /> Share {city}
@@ -380,8 +408,10 @@ const Storybook = () => {
                     src={StorybookVideo}
                     controls
                     playsInline
+                    muted
                     preload="metadata"
                     className="h-full w-full object-contain"
+                    ref={videoRef}
                   />
                 </div>
               </div>
@@ -467,37 +497,40 @@ const Storybook = () => {
         {/* Closing CTA — Polished split choices */}
         <section className="px-4 pb-8 md:px-6">
           <div className="relative overflow-hidden rounded-2xl border border-border bg-card/80 p-5 backdrop-blur">
-            <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl" />
-            <div className="pointer-events-none absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-amber-300/20 blur-3xl" />
+            <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-emerald-400/20 dark:bg-emerald-700/10 blur-3xl" />
+            <div className="pointer-events-none absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-amber-300/20 dark:bg-amber-600/10 blur-3xl" />
 
             <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2">
               {/* Propose */}
-              <div className="relative overflow-hidden rounded-xl border border-border/60 bg-gradient-to-br from-emerald-50 to-white p-5">
+              <div className="relative overflow-hidden rounded-xl border border-border/60 bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/40 dark:to-background p-5 transition-all hover:shadow-lg hover:-translate-y-0.5">
                 <div className="mb-3 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-2 ring-emerald-300/60">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-2 ring-emerald-300/60 dark:bg-emerald-900/40 dark:text-emerald-200 dark:ring-emerald-700/40">
                     <Sparkles className="h-5 w-5" />
                   </div>
                   <div className="text-base font-heading font-semibold text-foreground">Propose a New Idea</div>
                 </div>
                 <p className="text-sm text-muted-foreground">Got a spark? Share it with us to be included in the next Storybook.</p>
                 <div className="mt-4">
-                  <Button onClick={() => (window.location.href = "/events?tab=proposed")} className="gradient-gamification text-white">
+                  <Button
+                    onClick={() => (window.location.href = "/events?tab=proposed")}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-500 dark:hover:bg-emerald-400"
+                  >
                     Share your experience
                   </Button>
                 </div>
               </div>
 
               {/* Join */}
-              <div className="relative overflow-hidden rounded-xl border border-border/60 bg-gradient-to-br from-amber-50 to-white p-5">
+              <div className="relative overflow-hidden rounded-xl border border-border/60 bg-gradient-to-br from-amber-50 to-white dark:from-amber-950/30 dark:to-background p-5 transition-all hover:shadow-lg hover:-translate-y-0.5">
                 <div className="mb-3 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-2 ring-amber-300/60">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-2 ring-amber-300/60 dark:bg-amber-900/40 dark:text-amber-200 dark:ring-amber-700/40">
                     <CalendarDays className="h-5 w-5" />
                   </div>
                   <div className="text-base font-heading font-semibold text-foreground">Join an Upcoming Event</div>
                 </div>
                 <p className="text-sm text-muted-foreground">A unique blend of experiences: Discover Storybook library</p>
                 <div className="mt-4">
-                  <Button variant="outline" onClick={() => (window.location.href = "/events?tab=upcoming")} className="border-emerald-300/60 text-foreground hover:bg-emerald-50">
+                  <Button variant="outline" onClick={() => (window.location.href = "/events?tab=upcoming")} className="border-emerald-300/60 text-foreground hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
                     Browse past Storybooks
                   </Button>
                 </div>

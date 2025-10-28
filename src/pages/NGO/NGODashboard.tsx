@@ -118,13 +118,7 @@ const NGODashboard = () => {
                 Manage your organization's community impact
               </p>
             </div>
-            <div className="w-12 h-12 rounded-lg border border-border bg-card flex items-center justify-center overflow-hidden">
-              <img
-                src={ngoData.logo}
-                alt="Himnity logo"
-                className="h-10 w-10 object-contain"
-              />
-            </div>
+            {/* Removed logo next to greeting per request */}
           </div>
         </section>
 

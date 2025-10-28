@@ -2,6 +2,7 @@ import { NGOLayout } from "@/components/Layout/NGOLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Calendar,
@@ -19,11 +20,13 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { toast } from "sonner";
 import communityGardenImage from "@/assets/community-gardens.jpeg";
 import digitalLiteracyImage from "@/assets/DigitalLiteracyWorkshop.jpg";
 import foodForFamiliesImage from "@/assets/food4fams.jpg";
 import beachCleanupImage from "@/assets/clean-up-party.jpg";
+import qrImage from "@/assets/qr.png";
 
 type EventStatus = "live" | "scheduled" | "draft" | "completed";
 
@@ -126,6 +129,7 @@ const statusBadgeStyles: Record<EventStatus, string> = {
 
 const NGOEvents = () => {
   const navigate = useNavigate();
+  const [qrOpen, setQrOpen] = useState(false);
 
   const liveEvents = events.filter((event) => event.status === "live");
   const scheduledEvents = events.filter((event) => event.status === "scheduled");
@@ -161,9 +165,7 @@ const NGOEvents = () => {
       });
       return;
     }
-    toast.success("QR code ready for check-in", {
-      description: `Ask volunteers to scan ${event.qrCode} at the welcome desk.`
-    });
+    setQrOpen(true);
   };
 
   const handlePromoteEvent = (event: NGOEvent) => {
@@ -181,6 +183,18 @@ const NGOEvents = () => {
   return (
     <NGOLayout title="Events Management">
       <div className="container space-y-6 px-4 py-6 md:px-0">
+        {/* QR Dialog */}
+        <Dialog open={qrOpen} onOpenChange={setQrOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>QR Check-in</DialogTitle>
+              <DialogDescription>Ask volunteers to scan this code at the welcome desk.</DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center justify-center">
+              <img src={qrImage} alt="Event QR code" className="max-h-80 w-auto rounded-md border" />
+            </div>
+          </DialogContent>
+        </Dialog>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-heading font-semibold text-foreground">Your Events</h2>
