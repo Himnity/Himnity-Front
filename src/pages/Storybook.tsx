@@ -20,6 +20,8 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import TunisiaMap from "@/assets/Tunisia.png";
+import StorybookVideo from "@/assets/storybook.mp4";
 
 const impactReports = [
   {
@@ -36,36 +38,36 @@ const impactReports = [
     events: [
       {
         id: 1,
-        title: "Great Beach Cleanup",
+        title: "Marsa Beach Cleanup",
         participants: 45,
-        outcome: "78kg trash collected",
+        outcome: "28kg trash collected",
         beforeImage:
-          "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+          "https://images.unsplash.com/photo-1759240168070-a6ebd35a10f0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170",
         afterImage:
-          "https://images.unsplash.com/photo-1589627762073-9aca94506fa1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+          "https://images.unsplash.com/photo-1707148280377-6b161bd266e1?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1329",
         quote: "Amazing to see our beach restored to its natural beauty!",
       },
       {
         id: 2,
-        title: "Urban Forest Initiative",
+        title: "Madfoun Forest Initiative",
         participants: 67,
         outcome: "89 trees planted",
         beforeImage:
-          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+          "https://images.unsplash.com/photo-1586400792375-d6b8f82db2e6?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1171",
         afterImage:
-          "https://images.unsplash.com/photo-1633975531445-94aa5f8d5a26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+          "https://plus.unsplash.com/premium_photo-1681140561074-6efce711739c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2070",
         quote: "Building a greener future, one tree at a time.",
       },
       {
         id: 3,
-        title: "Community Workshop Series",
+        title: "Community Fix Series - Sousse",
         participants: 38,
         outcome: "Skills shared with 200+ people",
         beforeImage:
-          "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+          "https://plus.unsplash.com/premium_photo-1671456124505-697754dcfd0e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1360",
         afterImage:
-          "https://images.unsplash.com/photo-1555069855-e580a9adbf43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-        quote: "Knowledge shared is knowledge multiplied!",
+          "https://images.unsplash.com/photo-1751666526244-40239a251eae?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170",
+        quote: "Event of the week: Sousse School renovation",
       },
     ],
     organizers: [
@@ -234,140 +236,16 @@ const tunisiaBaseHotspots: readonly BaseHotspot[] = [
 ] as const;
 
 const TunisiaHeatmap = ({ activeCity, totalEvents, treesPlanted }: TunisiaHeatmapProps) => {
-  const hotspots = tunisiaBaseHotspots.map((spot) => {
-    const isActive = spot.name === activeCity;
-    const heatScore = isActive ? totalEvents : spot.impactScore;
-    const treeCount = Math.max(isActive ? treesPlanted : spot.forestCover, 6);
-    const heatSize = Math.min(180, 70 + Math.max(heatScore, 4) * 2.6);
-    const forestDensity = isActive
-      ? Math.max(3, Math.min(6, Math.round(treeCount / 20)))
-      : Math.max(2, Math.min(5, Math.round(spot.forestCover / 35)));
-
-    return {
-      ...spot,
-      isActive,
-      heatScore: Math.max(heatScore, 3),
-      treeCount,
-      heatSize,
-      forestDensity,
-    };
-  });
-
-  const tunisiaClipPath =
-    "polygon(50% 0%, 60% 6%, 64% 16%, 66% 26%, 61% 38%, 64% 50%, 58% 64%, 60% 78%, 55% 92%, 44% 100%, 38% 88%, 42% 72%, 38% 58%, 44% 44%, 40% 28%, 46% 12%)";
-
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-400">
-            Tunisia Heatmap
-          </p>
-          <h3 className="text-xl font-semibold text-foreground">Where communities take root</h3>
-          <p className="text-sm text-muted-foreground">
-            Each glow shows a pocket of volunteer momentum and forest renewal.
-          </p>
-        </div>
-        <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100 shadow-inner">
-          <div className="flex items-center gap-2 font-medium">
-            <MapPin className="h-4 w-4" />
-            {activeCity}
-          </div>
-          <div className="mt-1 text-xs text-emerald-100/80">
-            {totalEvents} events & {treesPlanted} trees planted
-          </div>
-        </div>
-      </div>
-
-      <div className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 p-6">
-        <div className="pointer-events-none absolute inset-0 opacity-80 mix-blend-screen bg-[radial-gradient(circle_at_20%_20%,rgba(45,212,191,0.18),transparent_55%),radial-gradient(circle_at_80%_25%,rgba(52,211,153,0.12),transparent_60%),radial-gradient(circle_at_50%_80%,rgba(74,222,128,0.14),transparent_65%)]" />
-        <div className="relative mx-auto flex h-72 w-full max-w-3xl items-center justify-center">
-          <div className="relative h-full w-40 sm:w-48">
-            <div
-              className="absolute left-1/2 top-0 h-full w-full -translate-x-1/2"
-              style={{ clipPath: tunisiaClipPath }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/60 via-lime-500/30 to-emerald-900/70" />
-              <div className="absolute inset-0 opacity-70 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.18),transparent_60%)]" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_60%,rgba(15,118,110,0.4),transparent_70%)]" />
-              <div className="absolute inset-0 border border-emerald-400/30" />
-            </div>
-          </div>
-
-          {hotspots.map((spot) => (
-            <div
-              key={spot.name}
-              className="absolute"
-              style={{
-                top: spot.top,
-                left: spot.left,
-                transform: "translate(-50%, -50%)",
-              }}
-            >
-              <div className="relative flex flex-col items-center gap-1 text-center">
-                <div
-                  className="-z-10 absolute"
-                  style={{
-                    top: "50%",
-                    left: "50%",
-                    width: `${spot.heatSize}px`,
-                    height: `${spot.heatSize}px`,
-                    transform: "translate(-50%, -50%)",
-                    borderRadius: "9999px",
-                    background: spot.isActive
-                      ? "radial-gradient(circle, rgba(34,197,94,0.55) 0%, rgba(16,185,129,0.38) 45%, rgba(15,118,110,0.18) 70%, transparent 100%)"
-                      : "radial-gradient(circle, rgba(34,197,94,0.35) 0%, rgba(16,185,129,0.26) 45%, rgba(15,118,110,0.12) 70%, transparent 100%)",
-                    boxShadow: spot.isActive
-                      ? "0 0 48px rgba(74,222,128,0.55)"
-                      : "0 0 24px rgba(16,185,129,0.38)",
-                  }}
-                />
-                <div
-                  className={`flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-widest backdrop-blur ${
-                    spot.isActive
-                      ? "border-lime-300/60 bg-lime-400/20 text-lime-100 shadow-lg"
-                      : "border-emerald-400/30 bg-emerald-500/15 text-emerald-100/90"
-                  }`}
-                >
-                  <MapPin className={`h-3 w-3 ${spot.isActive ? "text-lime-200" : "text-emerald-200/90"}`} />
-                  {spot.name}
-                </div>
-                <div className="flex items-center gap-2 rounded-md border border-emerald-400/20 bg-slate-950/40 px-2 py-[6px] text-[10px] text-emerald-100/80">
-                  <span className="font-semibold text-emerald-100">{spot.heatScore}</span>
-                  <span className="uppercase tracking-widest opacity-70">impact pulse</span>
-                </div>
-                <div className="flex items-center gap-[2px] text-[10px] text-emerald-100/75">
-                  {Array.from({ length: spot.forestDensity }).map((_, index) => (
-                    <TreePine
-                      key={index}
-                      className={`h-3 w-3 ${spot.isActive ? "text-lime-200" : "text-emerald-300/90"}`}
-                    />
-                  ))}
-                  <span className="ml-1 font-medium text-emerald-50/80">{spot.treeCount}+ trees</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="relative mt-6 grid gap-3 text-xs text-emerald-100/80 sm:grid-cols-3">
-          <div className="flex items-center gap-2">
-            <span className="h-3 w-10 rounded-full bg-gradient-to-r from-emerald-200 via-emerald-500 to-emerald-900" />
-            <span>Heat intensity mirrors volunteer turnout</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-[2px]">
-              <TreePine className="h-3 w-3 text-emerald-200" />
-              <TreePine className="h-3 w-3 text-emerald-200/70" />
-              <TreePine className="h-3 w-3 text-emerald-200/40" />
-            </div>
-            <span>Tree clusters highlight regenerated forests</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-emerald-200" />
-            <span>The brightest glow spotlights {activeCity}</span>
-          </div>
-        </div>
+    <div className="mx-auto w-full max-w-2xl">
+      <div className="w-full h-56 md:h-64 lg:h-72 overflow-hidden rounded-xl border border-border bg-card">
+        <img
+          src={TunisiaMap}
+          alt="Tunisia heatmap"
+          className="h-full w-full object-contain"
+          loading="eager"
+          decoding="async"
+        />
       </div>
     </div>
   );
@@ -415,12 +293,12 @@ const Storybook = () => {
           <Leaf className="absolute right-10 top-14 h-8 w-8 text-emerald-500/30 animate-pulse" />
           <Leaf className="absolute left-1/2 bottom-6 h-5 w-5 -translate-x-1/2 text-emerald-400/40 animate-pulse" />
           <div className="relative mx-auto max-w-3xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-600">Our shared journey</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-600">By us, For us</p>
             <h1 className="mt-2 bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-3xl font-heading font-extrabold text-transparent md:text-4xl">
-              “This isn’t just an app — it’s a community that dared to dream together.”
+              A Story of Impact and Unity
             </h1>
             <p className="mt-3 text-sm text-emerald-900/70">
-              Over the months, thousands of hands joined to solve problems, plant ideas, and grow hope.
+              A dive into this month's impact
             </p>
             <div className="mt-5 flex flex-col items-center justify-center gap-3 md:flex-row md:gap-4">
               <Select value={selectedCity} onValueChange={(value: string) => setSelectedCity(value as typeof selectedCity)}>
@@ -443,73 +321,6 @@ const Storybook = () => {
               >
                 <Share2 className="mr-2 h-4 w-4" /> Share {city}
               </Button>
-            </div>
-          </div>
-        </section>
-
-        {/* Reimagined Journey — From Spark to Movement */}
-        <section className="px-4 md:px-6">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">From Spark to Movement</h2>
-          <div className="relative mx-auto max-w-5xl">
-            {/* subtle background path ribbon */}
-            <div className="pointer-events-none absolute inset-x-4 -top-2 -bottom-2 -z-10 rounded-3xl bg-gradient-to-r from-emerald-100/40 via-emerald-50/30 to-teal-100/40 blur-xl" />
-            <div className="grid gap-4 sm:grid-cols-3">
-              {/* Spark */}
-              <div className="group relative overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-amber-50 to-white p-5 shadow-sm transition hover:shadow-md">
-                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-amber-200/30 blur-2xl" />
-                <div className="mb-3 flex items-center gap-3">
-                  <div className="relative">
-                    <span className="absolute -inset-1 rounded-full bg-amber-400/30 blur" />
-                    <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-2 ring-amber-300/60">
-                      <Leaf className="h-5 w-5" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-heading font-semibold text-foreground">The Spark</div>
-                    <div className="text-xs text-muted-foreground">Ideas that mattered. First steps toward real change.</div>
-                  </div>
-                </div>
-                <p className="text-sm text-foreground/90">Neighbors proposed, rallied, and showed up. Small actions ignited a shared purpose.</p>
-                <div className="mt-4 inline-flex items-center rounded-full border border-amber-300/60 bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-700">Idea ➝ Action</div>
-              </div>
-
-              {/* Growth */}
-              <div className="group relative overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-emerald-50 to-white p-5 shadow-sm transition hover:shadow-md">
-                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-emerald-200/30 blur-2xl" />
-                <div className="mb-3 flex items-center gap-3">
-                  <div className="relative">
-                    <span className="absolute -inset-1 rounded-full bg-emerald-400/30 blur" />
-                    <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-2 ring-emerald-300/60">
-                      <TreePine className="h-5 w-5" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-heading font-semibold text-foreground">The Growth</div>
-                    <div className="text-xs text-muted-foreground">NGOs joined hands. Momentum turned into programs.</div>
-                  </div>
-                </div>
-                <p className="text-sm text-foreground/90">Partnerships formed. Projects got resources, structure, and measurable impact.</p>
-                <div className="mt-4 inline-flex items-center rounded-full border border-emerald-300/60 bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700">Passion ➝ Partnership</div>
-              </div>
-
-              {/* Movement */}
-              <div className="group relative overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-teal-50 to-white p-5 shadow-sm transition hover:shadow-md">
-                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-teal-200/30 blur-2xl" />
-                <div className="mb-3 flex items-center gap-3">
-                  <div className="relative">
-                    <span className="absolute -inset-1 rounded-full bg-teal-400/30 blur" />
-                    <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-teal-100 text-teal-700 ring-2 ring-teal-300/60">
-                      <MapPin className="h-5 w-5" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-heading font-semibold text-foreground">The Movement</div>
-                    <div className="text-xs text-muted-foreground">Across regions — people cleaned, built, planted, helped.</div>
-                  </div>
-                </div>
-                <p className="text-sm text-foreground/90">A living map of solidarity. Not just numbers — real faces, places, and change.</p>
-                <div className="mt-4 inline-flex items-center rounded-full border border-teal-300/60 bg-teal-50 px-2.5 py-1 text-[11px] font-medium text-teal-700">Local ➝ Nationwide</div>
-              </div>
             </div>
           </div>
         </section>
@@ -558,9 +369,29 @@ const Storybook = () => {
           </div>
         </div>
 
+        {/* Month's Summary */}
+        <div className="px-4 md:px-6">
+          <h2 className="mb-4 text-lg font-semibold text-foreground">Month's Summary</h2>
+          <Card className="border-border bg-card">
+            <CardContent className="p-4 md:p-5">
+              <div className="mx-auto w-full max-w-2xl">
+                <div className="h-56 md:h-64 lg:h-72 overflow-hidden rounded-xl border border-border bg-muted/10">
+                  <video
+                    src={StorybookVideo}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="h-full w-full object-contain"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Impact Stories */}
         <div className="px-4 md:px-6">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">Impact Stories</h2>
+          <h2 className="mb-4 text-lg font-semibold text-foreground">Notable Mentions</h2>
           <div className="space-y-6">
             {events.map((event) => (
               <Card key={event.id} className="border-border bg-card/80 backdrop-blur">
@@ -584,7 +415,7 @@ const Storybook = () => {
                       <ImageWithFallback
                         src={event.beforeImage}
                         alt={`${event.title} before`}
-                        className="h-24 w-full rounded-lg object-cover"
+                        className="h-40 md:h-48 lg:h-56 w-full rounded-xl object-cover my-2"
                       />
                     </div>
                     <div>
@@ -592,7 +423,7 @@ const Storybook = () => {
                       <ImageWithFallback
                         src={event.afterImage}
                         alt={`${event.title} after`}
-                        className="h-24 w-full rounded-lg object-cover"
+                        className="h-40 md:h-48 lg:h-56 w-full rounded-xl object-cover my-2"
                       />
                     </div>
                   </div>
@@ -608,14 +439,27 @@ const Storybook = () => {
         {/* Notable Contributions section removed per request */}
 
         <div className="px-4 md:px-6">
-          <h2 className="mb-4 text-lg font-semibold text-foreground">Impact Across Regions</h2>
+          <h2 className="mb-1 text-lg font-semibold text-foreground">Impact Across Regions</h2>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Interactive map — click a city to explore.
+          </p>
           <Card className="border-border bg-card">
-            <CardContent className="p-6">
+            <CardContent className="p-4 md:p-5">
               <TunisiaHeatmap
                 activeCity={city}
                 totalEvents={metrics.totalEvents}
                 treesPlanted={metrics.treesPlanted}
               />
+              <div className="mt-4 grid gap-3 text-xs text-muted-foreground sm:grid-cols-2">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-emerald-500" />
+                  <span>Tunisia</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <TreePine className="h-4 w-4 text-emerald-500" />
+                  <span>1 tree = 1 event</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -635,10 +479,10 @@ const Storybook = () => {
                   </div>
                   <div className="text-base font-heading font-semibold text-foreground">Propose a New Idea</div>
                 </div>
-                <p className="text-sm text-muted-foreground">Got a spark? Share it. The community and NGOs can bring it to life.</p>
+                <p className="text-sm text-muted-foreground">Got a spark? Share it with us to be included in the next Storybook.</p>
                 <div className="mt-4">
                   <Button onClick={() => (window.location.href = "/events?tab=proposed")} className="gradient-gamification text-white">
-                    Share your idea
+                    Share your experience
                   </Button>
                 </div>
               </div>
@@ -651,10 +495,10 @@ const Storybook = () => {
                   </div>
                   <div className="text-base font-heading font-semibold text-foreground">Join an Upcoming Event</div>
                 </div>
-                <p className="text-sm text-muted-foreground">Ready to help? Find something near you and jump right in.</p>
+                <p className="text-sm text-muted-foreground">A unique blend of experiences: Discover Storybook library</p>
                 <div className="mt-4">
                   <Button variant="outline" onClick={() => (window.location.href = "/events?tab=upcoming")} className="border-emerald-300/60 text-foreground hover:bg-emerald-50">
-                    Browse events
+                    Browse past Storybooks
                   </Button>
                 </div>
               </div>
