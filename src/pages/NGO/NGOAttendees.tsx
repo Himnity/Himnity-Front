@@ -5,9 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  QrCode, 
-  Users, 
+import {
+  QrCode,
+  Users,
   Download,
   Search,
   Filter,
@@ -17,11 +17,26 @@ import {
   MapPin,
   Smartphone,
   ArrowLeft,
-  X
+  X,
+  AlertCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { format } from "date-fns";
 
 // Mock events data
 const eventsData = {
@@ -34,7 +49,7 @@ const eventsData = {
     qrCode: "QR-CGR-001",
     totalRegistrations: 23,
     checkedInCount: 8,
-    status: "Active"
+  status: "live"
   },
   "e2": {
     id: "e2",
@@ -45,7 +60,7 @@ const eventsData = {
     qrCode: "QR-DLW-002",
     totalRegistrations: 15,
     checkedInCount: 12,
-    status: "Active"
+  status: "scheduled"
   },
   "c1": {
     id: "c1",
@@ -56,7 +71,7 @@ const eventsData = {
     qrCode: "QR-BCS-003",
     totalRegistrations: 75,
     checkedInCount: 75,
-    status: "Completed"
+  status: "completed"
   }
 };
 
@@ -171,20 +186,83 @@ const NGOAttendees = () => {
     attendee.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const checkedInAttendees = filteredAttendees.filter(a => a.checkedIn);
-  const noShowAttendees = filteredAttendees.filter(a => !a.checkedIn);
-  const isEventCompleted = eventData.status === "Completed";
+  const checkedInAttendees = filteredAttendees.filter((attendee) => attendee.checkedIn);
+  const noShowAttendees = filteredAttendees.filter((attendee) => !attendee.checkedIn);
+  const isEventLive = eventData.status === "live";
+  const isEventCompleted = eventData.status === "completed";
 
   const handleDownloadList = () => {
     toast.success("Attendance list downloaded!");
   };
 
   const handleShowQRCode = () => {
-    if (isEventCompleted) {
-      toast.error("Cannot show QR code for completed events");
+    if (!isEventLive) {
+      toast.info("QR code unlocks once the event is live", {
+        description: "Mark the event as live from your run sheet to display the check-in code."
+      });
       return;
     }
-    setShowQRCode(!showQRCode);
+    setShowQRCode(true);
+  };
+
+  // Manual check-in for an existing attendee
+  const handleCheckIn = (attendeeId: string) => {
+    setAttendees((prev) => {
+      const updated = prev.map((a) => {
+        if (a.id === attendeeId) {
+          return {
+            ...a,
+            checkedIn: true,
+            checkInTime: format(new Date(), "h:mm a"),
+          };
+        }
+        return a;
+      });
+      toast.success("Attendee checked in");
+      return updated;
+    });
+  };
+
+  const handleUndoCheckIn = (attendeeId: string) => {
+    setAttendees((prev) => {
+      const updated = prev.map((a) => {
+        if (a.id === attendeeId) {
+          return {
+            ...a,
+            checkedIn: false,
+            checkInTime: null,
+          };
+        }
+        return a;
+      });
+      toast.success("Check-in reverted");
+      return updated;
+    });
+  };
+
+  const statusBadge = () => {
+    switch (eventData.status) {
+      case "live":
+        return {
+          label: "Live",
+          className: "bg-emerald-600 text-white"
+        };
+      case "scheduled":
+        return {
+          label: "Scheduled",
+          className: "bg-amber-100 text-amber-900 border border-amber-200"
+        };
+      case "completed":
+        return {
+          label: "Completed",
+          className: "bg-sky-100 text-sky-900 border border-sky-200"
+        };
+      default:
+        return {
+          label: eventData.status,
+          className: "bg-muted text-muted-foreground"
+        };
+    }
   };
 
   // Real QR Code component using a simple pattern
@@ -218,7 +296,7 @@ const NGOAttendees = () => {
 
   return (
     <NGOLayout title="Event Attendees">
-      <div className="space-y-4 p-4">
+      <div className="container space-y-6 px-4 py-6 md:px-0">
         {/* Back Button and Header */}
         <div className="flex items-center space-x-3">
           <Button 
@@ -254,13 +332,9 @@ const NGOAttendees = () => {
                   </div>
                 </div>
               </div>
-              <Badge variant="secondary" className={
-                isEventCompleted 
-                  ? "bg-blue-100 text-blue-800 border-blue-200"
-                  : "bg-green-100 text-green-800 border-green-200"
-              }>
-                <CheckCircle className="h-3 w-3 mr-1" />
-                {eventData.status}
+              <Badge className={`${statusBadge().className} flex items-center gap-1`}>
+                <CheckCircle className="h-3 w-3" />
+                {statusBadge().label}
               </Badge>
             </div>
 
@@ -295,19 +369,74 @@ const NGOAttendees = () => {
           <Button 
             onClick={handleShowQRCode} 
             className="gradient-primary"
-            disabled={isEventCompleted}
+            disabled={!isEventLive}
           >
             <QrCode className="h-4 w-4 mr-2" />
-            {showQRCode ? "Hide QR Code" : "Show QR Code"}
+            Show QR Code
           </Button>
-          <Button variant="outline" onClick={handleDownloadList}>
+          <Button
+            variant="outline"
+            onClick={handleDownloadList}
+            disabled={!isEventLive && !isEventCompleted}
+          >
             <Download className="h-4 w-4 mr-2" />
             Download List
           </Button>
         </div>
 
+        {/* QR Dialog (popup) */}
+        <Dialog open={showQRCode} onOpenChange={setShowQRCode}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Event Check-in QR Code</DialogTitle>
+              <DialogDescription className="mb-4">Code: {eventData.qrCode}</DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center justify-center">
+              <div className="w-60 h-60 bg-white border-2 border-border rounded p-2">
+                <div className="w-full h-full grid grid-cols-21 gap-px bg-black">
+                  {Array.from({ length: 441 }, (_, i) => {
+                    const row = Math.floor(i / 21);
+                    const col = i % 21;
+                    const isBlack = (row + col + Math.sin(row * 0.5) * 5 + Math.cos(col * 0.3) * 3) % 2 < 1;
+                    return (
+                      <div
+                        key={i}
+                        className={`aspect-square ${isBlack ? 'bg-black' : 'bg-white'}`}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {!isEventLive && !isEventCompleted && (
+          <Card className="card-civic flex items-start gap-3 border border-dashed border-amber-200 bg-amber-50/50 p-4">
+            <AlertCircle className="h-5 w-5 text-amber-700" />
+            <div className="space-y-1 text-sm">
+              <p className="font-medium text-amber-900">Attendance tools are locked</p>
+              <p className="text-amber-800">
+                Start the event when volunteers arrive to unlock QR check-in and live attendance tracking.
+              </p>
+            </div>
+          </Card>
+        )}
+
+        {isEventCompleted && (
+          <Card className="card-civic flex items-start gap-3 border border-sky-200 bg-sky-50/40 p-4">
+            <CheckCircle className="h-5 w-5 text-sky-700" />
+            <div className="space-y-1 text-sm">
+              <p className="font-medium text-sky-900">Event closed</p>
+              <p className="text-sky-800">
+                The QR code is no longer available. Export the final attendance list for your records or impact report.
+              </p>
+            </div>
+          </Card>
+        )}
+
         {/* QR Code Display */}
-        {showQRCode && !isEventCompleted && (
+        {showQRCode && isEventLive && (
           <Card className="card-civic relative">
             <Button
               variant="ghost"
@@ -337,12 +466,18 @@ const NGOAttendees = () => {
           </Button>
         </div>
 
+        {/* Manual walk-in registration removed; use per-attendee status dropdowns (click badge) */}
+
         {/* Attendees Tabs */}
         <Tabs defaultValue="all" className="space-y-4">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="all">All ({filteredAttendees.length})</TabsTrigger>
-            <TabsTrigger value="checked-in">Checked In ({checkedInAttendees.length})</TabsTrigger>
-            <TabsTrigger value="no-show">No Show ({noShowAttendees.length})</TabsTrigger>
+            <TabsTrigger value="checked-in" disabled={!isEventLive && !isEventCompleted}>
+              Checked In ({checkedInAttendees.length})
+            </TabsTrigger>
+            <TabsTrigger value="no-show" disabled={!isEventLive && !isEventCompleted}>
+              No Show ({noShowAttendees.length})
+            </TabsTrigger>
           </TabsList>
 
           {/* All Attendees */}
@@ -365,24 +500,38 @@ const NGOAttendees = () => {
                   </div>
                   
                   <div className="flex items-center space-x-3">
-                    {attendee.checkedIn ? (
-                      <div className="text-right">
-                        <Badge className="bg-green-100 text-green-800 border-green-200">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          Checked In
-                        </Badge>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {attendee.checkInTime}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="text-right">
-                        <Badge variant="outline" className="text-red-600 border-red-200">
-                          <X className="h-3 w-3 mr-1" />
-                          No Show
-                        </Badge>
-                      </div>
-                    )}
+                      {attendee.checkedIn ? (
+                        <div className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Badge className="bg-green-100 text-green-800 border-green-200 cursor-pointer">
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                Checked In
+                              </Badge>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem onSelect={() => handleUndoCheckIn(attendee.id)}>Undo Check In</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {attendee.checkInTime}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Badge variant="outline" className="text-red-600 border-red-200 cursor-pointer">
+                                <X className="h-3 w-3 mr-1" />
+                                No Show
+                              </Badge>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem onSelect={() => handleCheckIn(attendee.id)}>Mark as Checked In</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      )}
                   </div>
                 </div>
               </Card>

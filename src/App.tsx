@@ -30,6 +30,7 @@ const NotFound = lazyWithPreload(() => import("@/pages/NotFound"));
 const NGODashboard = lazyWithPreload(() => import("@/pages/NGO/NGODashboard"));
 const NGOProposals = lazyWithPreload(() => import("@/pages/NGO/NGOProposals"));
 const NGOEvents = lazyWithPreload(() => import("@/pages/NGO/NGOEvents"));
+const NGOAnalytics = lazyWithPreload(() => import("@/pages/NGO/NGOAnalytics"));
 const NGOCreateEvent = lazyWithPreload(() => import("@/pages/NGO/NGOCreateEvent"));
 const NGOAttendees = lazyWithPreload(() => import("@/pages/NGO/NGOAttendees"));
 const NGOEventRequests = lazyWithPreload(() => import("@/pages/NGO/NGOEventRequests"));
@@ -45,6 +46,7 @@ const lazyRoutesToWarm = [
   NGODashboard,
   NGOProposals,
   NGOEvents,
+  NGOAnalytics,
   NGOCreateEvent,
   NGOAttendees,
   NGOEventRequests,
@@ -99,6 +101,7 @@ const App = () => {
                   <Route path="/ngo" element={<NGODashboard />} />
                   <Route path="/ngo/proposals" element={<NGOProposals />} />
                   <Route path="/ngo/events" element={<NGOEvents />} />
+                  <Route path="/ngo/analytics" element={<NGOAnalytics />} />
                   <Route path="/ngo/events/create" element={<NGOCreateEvent />} />
                   <Route path="/ngo/events/edit/:id" element={<NGOCreateEvent />} />
                   <Route path="/ngo/events/:id/attendees" element={<NGOAttendees />} />

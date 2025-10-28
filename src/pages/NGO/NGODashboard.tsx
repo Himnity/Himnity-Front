@@ -2,19 +2,19 @@ import { NGOLayout } from "@/components/Layout/NGOLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Calendar, 
-  Users, 
-  TrendingUp, 
-  Star, 
+import {
+  Calendar,
+  Users,
+  TrendingUp,
+  Star,
   Plus,
   Eye,
   CheckCircle,
   Clock,
-  MapPin
+  MapPin,
+  BarChart3,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import HimnityLogo from "@/assets/Himnity-Logo.png";
 
 // Mock NGO data
@@ -91,6 +91,10 @@ const NGODashboard = () => {
     navigate("/ngo/proposals");
   };
 
+  const handleViewAnalytics = () => {
+    navigate("/ngo/analytics");
+  };
+
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
       case "High": return "bg-red-100 text-red-800 border-red-200";
@@ -102,7 +106,7 @@ const NGODashboard = () => {
 
   return (
     <NGOLayout>
-      <div className="space-y-6 p-4">
+      <div className="container space-y-6 px-4 py-6 md:px-0">
         {/* Welcome Section */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
@@ -125,7 +129,7 @@ const NGODashboard = () => {
         </section>
 
         {/* Stats Overview */}
-        <section className="grid grid-cols-2 gap-4">
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <Card className="p-4 card-civic">
             <div className="flex items-center space-x-3">
               <Calendar className="h-8 w-8 text-primary" />
@@ -170,7 +174,7 @@ const NGODashboard = () => {
         {/* Quick Actions */}
         <section className="space-y-3">
           <h2 className="text-xl font-heading font-bold text-foreground">Quick Actions</h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Button 
               onClick={handleCreateEvent}
               className="h-16 gradient-primary hover:scale-105 transition-transform flex-col space-y-1"
@@ -185,6 +189,14 @@ const NGODashboard = () => {
             >
               <Eye className="h-5 w-5" />
               <span className="text-sm">Review Proposals</span>
+            </Button>
+            <Button
+              onClick={handleViewAnalytics}
+              variant="outline"
+              className="h-16 flex-col space-y-1 border-primary/40 text-primary hover:bg-primary/10"
+            >
+              <BarChart3 className="h-5 w-5" />
+              <span className="text-sm">Open Analytics</span>
             </Button>
           </div>
         </section>

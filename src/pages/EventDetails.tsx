@@ -394,29 +394,29 @@ const EventDetails = () => {
 
         {/* Signup Modal */}
         <Dialog open={isSignupModalOpen} onOpenChange={setIsSignupModalOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white text-gray-900 border shadow-lg">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border border-border/60 bg-card/95 text-card-foreground shadow-xl backdrop-blur supports-[backdrop-filter]:bg-card/85">
             <DialogHeader>
-              <DialogTitle className="text-gray-900 text-xl">Sign Up for {eventData.title}</DialogTitle>
+              <DialogTitle className="text-xl text-foreground">Sign Up for {eventData.title}</DialogTitle>
             </DialogHeader>
             
-            <form onSubmit={handleSubmitSignup} className="space-y-6 text-gray-900">
+            <form onSubmit={handleSubmitSignup} className="space-y-6 text-card-foreground">
               {/* Personal Information */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-lg text-gray-900">Personal Information</h3>
+                <h3 className="text-lg font-semibold text-foreground">Personal Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="fullName" className="text-gray-700 font-medium">Full Name *</Label>
+                    <Label htmlFor="fullName" className="text-sm font-medium text-foreground">Full Name *</Label>
                     <Input
                       id="fullName"
                       required
                       value={signupForm.fullName}
                       onChange={(e) => setSignupForm({...signupForm, fullName: e.target.value})}
                       placeholder="Your full name"
-                      className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+                      className="bg-background text-foreground placeholder:text-muted-foreground border-border"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email" className="text-gray-700 font-medium">Email Address *</Label>
+                    <Label htmlFor="email" className="text-sm font-medium text-foreground">Email Address *</Label>
                     <Input
                       id="email"
                       type="email"
@@ -424,14 +424,14 @@ const EventDetails = () => {
                       value={signupForm.email}
                       onChange={(e) => setSignupForm({...signupForm, email: e.target.value})}
                       placeholder="your.email@example.com"
-                      className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+                      className="bg-background text-foreground placeholder:text-muted-foreground border-border"
                     />
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="phone" className="text-gray-700 font-medium">Phone Number *</Label>
+                    <Label htmlFor="phone" className="text-sm font-medium text-foreground">Phone Number *</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -439,17 +439,17 @@ const EventDetails = () => {
                       value={signupForm.phone}
                       onChange={(e) => setSignupForm({...signupForm, phone: e.target.value})}
                       placeholder="+216 XX XXX XXX"
-                      className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+                      className="bg-background text-foreground placeholder:text-muted-foreground border-border"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="emergencyContact" className="text-gray-700 font-medium">Emergency Contact</Label>
+                    <Label htmlFor="emergencyContact" className="text-sm font-medium text-foreground">Emergency Contact</Label>
                     <Input
                       id="emergencyContact"
                       value={signupForm.emergencyContact}
                       onChange={(e) => setSignupForm({...signupForm, emergencyContact: e.target.value})}
                       placeholder="Name and phone number"
-                      className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+                      className="bg-background text-foreground placeholder:text-muted-foreground border-border"
                     />
                   </div>
                 </div>
@@ -458,15 +458,15 @@ const EventDetails = () => {
               {/* Experience & Dietary */}
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="experience" className="text-gray-700 font-medium">Relevant Experience (Optional)</Label>
+                  <Label htmlFor="experience" className="text-sm font-medium text-foreground">Relevant Experience (Optional)</Label>
                   <Select 
                     value={signupForm.experience}
                     onValueChange={(value) => setSignupForm({...signupForm, experience: value})}
                   >
-                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                    <SelectTrigger className="border-border bg-background text-foreground">
                       <SelectValue placeholder="Select your experience level" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white border-gray-300">
+                    <SelectContent className="border-border bg-card text-card-foreground">
                       <SelectItem value="beginner">Complete Beginner</SelectItem>
                       <SelectItem value="some">Some Experience</SelectItem>
                       <SelectItem value="experienced">Very Experienced</SelectItem>
@@ -476,20 +476,20 @@ const EventDetails = () => {
                 </div>
                 
                 <div>
-                  <Label htmlFor="dietary" className="text-gray-700 font-medium">Dietary Restrictions/Allergies</Label>
+                  <Label htmlFor="dietary" className="text-sm font-medium text-foreground">Dietary Restrictions/Allergies</Label>
                   <Input
                     id="dietary"
                     value={signupForm.dietaryRestrictions}
                     onChange={(e) => setSignupForm({...signupForm, dietaryRestrictions: e.target.value})}
                     placeholder="Any food allergies or dietary requirements"
-                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+                    className="bg-background text-foreground placeholder:text-muted-foreground border-border"
                   />
                 </div>
               </div>
 
               {/* What can you bring */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-gray-900">What can you bring to help?</h3>
+                <h3 className="font-semibold text-foreground">What can you bring to help?</h3>
                 <div className="space-y-2">
                   {eventData.whatToBring.map((item, index) => (
                     <div key={index} className="flex items-center space-x-2">
@@ -498,7 +498,7 @@ const EventDetails = () => {
                         checked={signupForm.bringingItems.includes(item)}
                         onCheckedChange={() => handleItemToggle(item)}
                       />
-                      <Label htmlFor={`item-${index}`} className="text-sm text-gray-700">
+                      <Label htmlFor={`item-${index}`} className="text-sm text-muted-foreground">
                         {item}
                       </Label>
                     </div>
@@ -508,14 +508,14 @@ const EventDetails = () => {
 
               {/* Additional Notes */}
               <div>
-                <Label htmlFor="notes" className="text-gray-700 font-medium">Additional Notes</Label>
+                <Label htmlFor="notes" className="text-sm font-medium text-foreground">Additional Notes</Label>
                 <Textarea
                   id="notes"
                   value={signupForm.additionalNotes}
                   onChange={(e) => setSignupForm({...signupForm, additionalNotes: e.target.value})}
                   placeholder="Anything else you'd like us to know?"
                   rows={3}
-                  className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-500"
+                  className="bg-background text-foreground placeholder:text-muted-foreground border-border"
                 />
               </div>
 

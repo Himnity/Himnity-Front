@@ -95,7 +95,7 @@ const NGOCreateEvent = () => {
       id: Date.now().toString()
     };
 
-    setAgenda(prev => [...prev].sort((a, b) => a.time.localeCompare(b.time)));
+    setAgenda(prev => [...prev, newItem].sort((a, b) => a.time.localeCompare(b.time)));
     setCurrentAgendaItem(initialAgendaItem);
   };
 
@@ -128,7 +128,7 @@ const NGOCreateEvent = () => {
 
   return (
     <NGOLayout title="Create Event">
-      <div className="p-4 space-y-6">
+      <div className="container space-y-6 px-4 py-6 md:px-0">
         {/* Header */}
         <div className="flex items-center space-x-3">
           <Button 

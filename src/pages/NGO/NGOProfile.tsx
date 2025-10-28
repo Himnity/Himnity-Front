@@ -117,7 +117,7 @@ const NGOProfile = () => {
 
   return (
     <NGOLayout title="Organization Profile">
-      <div className="p-4 space-y-6">
+      <div className="container space-y-6 px-4 py-6 md:px-0">
         {/* Profile Header */}
         <Card className="p-6 card-civic">
           <div className="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-6">

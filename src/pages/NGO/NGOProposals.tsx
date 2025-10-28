@@ -1,21 +1,22 @@
 import { NGOLayout } from "@/components/Layout/NGOLayout";
-import { Card } from "@/components/ui/card";
+import { ProposalCard } from "@/components/Events/ProposalCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { 
-  Search, 
-  Filter, 
-  TrendingUp, 
-  Calendar, 
-  MapPin, 
-  User,
+import {
+  Search,
+  TrendingUp,
+  Calendar,
+  MapPin,
   CheckCircle,
-  Clock,
-  Heart
+  Bookmark,
+  MessageCircle,
+  CalendarPlus,
+  Share2,
+  ClipboardCheck,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -107,7 +108,7 @@ const NGOProposals = () => {
     return matchesSearch && matchesCategory && matchesUrgency;
   });
 
-  const handleViewDetails = (proposal: any) => {
+  const openProposalDetails = (proposal: any) => {
     setSelectedProposal(proposal);
     setIsDetailDialogOpen(true);
   };
@@ -135,7 +136,7 @@ const NGOProposals = () => {
 
   return (
     <NGOLayout title="Community Proposals">
-      <div className="space-y-4 p-4">
+      <div className="container space-y-6 px-4 py-6 md:px-0">
         {/* Search and Filters */}
         <div className="space-y-3">
           <div className="relative">
@@ -185,92 +186,87 @@ const NGOProposals = () => {
         </div>
 
         {/* Proposals List */}
-        <div className="space-y-4">
-          {filteredProposals.map((proposal) => (
-            <Card key={proposal.id} className="p-4 card-civic border-l-4 border-l-primary">
-              <div className="space-y-3">
-                {/* Header */}
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-heading font-semibold text-foreground text-lg leading-tight">
-                      {proposal.title}
-                    </h3>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <Badge variant="outline">{proposal.category}</Badge>
-                      <Badge className={getUrgencyColor(proposal.urgency)}>
-                        {proposal.urgency} Priority
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-1 bg-muted/50 px-2 py-1 rounded-full">
-                    <TrendingUp className="h-3 w-3 text-primary" />
-                    <span className="text-sm font-medium">{proposal.upvotes} votes</span>
-                  </div>
-                </div>
+        <div className="space-y-6">
+          {filteredProposals.map((proposal) => {
+            const preRegistrations = Math.max(6, Math.round(proposal.upvotes * 0.65));
+            const commentCount = Math.max(3, Math.round(proposal.upvotes / 4));
+            const statusDetail = `Preferred window ${proposal.preferredTime} • ${proposal.location}`;
 
-                {/* Description */}
-                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
-                  {proposal.description}
-                </p>
+            return (
+              <div key={proposal.id} className="space-y-3">
+                <ProposalCard
+                  proposal={{
+                    id: proposal.id,
+                    title: proposal.title,
+                    description: proposal.description,
+                    category: proposal.category,
+                    proposedBy: proposal.proposedBy,
+                    proposedDate: proposal.proposedDate,
+                    upvotes: proposal.upvotes,
+                    status: "pending",
+                    statusDetail,
+                    preRegistrations,
+                    comments: commentCount,
+                  }}
+                  onLike={() => toast.success("Marked as high priority")}
+                  onPreRegister={() => handleAdoptProposal(proposal.id)}
+                  onComment={() => openProposalDetails(proposal)}
+                  primaryActionLabel="Adopt idea"
+                  primaryActionActiveLabel="Adopted"
+                  secondaryActionLabel="Review brief"
+                />
 
-                {/* Details */}
-                <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
-                  <div className="flex items-center">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    <span>{proposal.location}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    <span>{proposal.preferredTime}</span>
-                  </div>
-                </div>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                  <div className="flex items-center space-x-2">
-                    <Avatar className="w-6 h-6">
-                      <AvatarFallback className="text-xs bg-muted">
-                        {getInitials(proposal.proposedBy)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <span className="text-sm text-muted-foreground">by {proposal.proposedBy}</span>
-                      <div className="text-xs text-muted-foreground">{proposal.proposedDate}</div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleViewDetails(proposal)}
-                    >
-                      View Details
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="gradient-primary"
-                      onClick={() => handleAdoptProposal(proposal.id)}
-                    >
-                      <CheckCircle className="h-4 w-4 mr-1" />
-                      Adopt
-                    </Button>
-                  </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => toast.success("Discovery session scheduled")}
+                  >
+                    <CalendarPlus className="mr-2 h-4 w-4" /> Schedule review
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => toast.info("Message window opened")}
+                  >
+                    <MessageCircle className="mr-2 h-4 w-4" /> Message proposer
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toast.success("Saved to shortlist")}
+                  >
+                    <Bookmark className="mr-2 h-4 w-4" /> Save for later
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toast.info("Share link copied")}
+                  >
+                    <Share2 className="mr-2 h-4 w-4" /> Share idea
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openProposalDetails(proposal)}
+                  >
+                    <ClipboardCheck className="mr-2 h-4 w-4" /> View full brief
+                  </Button>
                 </div>
               </div>
-            </Card>
-          ))}
+            );
+          })}
         </div>
 
         {/* Proposal Details Dialog */}
         {selectedProposal && (
           <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white text-gray-900 border shadow-lg">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border border-border/60 bg-card/95 text-card-foreground shadow-xl backdrop-blur supports-[backdrop-filter]:bg-card/85">
               <DialogHeader>
-                <DialogTitle className="text-gray-900 text-xl">{selectedProposal.title}</DialogTitle>
+                <DialogTitle className="text-xl text-foreground">{selectedProposal.title}</DialogTitle>
               </DialogHeader>
               
-              <div className="space-y-6 text-gray-900">
+              <div className="space-y-6 text-card-foreground">
                 {/* Proposal Info */}
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
@@ -284,66 +280,63 @@ const NGOProposals = () => {
                     </div>
                   </div>
                   
-                  <p className="text-gray-700 leading-relaxed">{selectedProposal.description}</p>
+                  <p className="leading-relaxed text-muted-foreground">{selectedProposal.description}</p>
                 </div>
 
                 {/* Event Details */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                <div className="grid grid-cols-1 gap-4 rounded-2xl bg-muted/40 p-4 md:grid-cols-2">
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Target Audience</label>
-                    <p className="text-gray-900">{selectedProposal.targetGroup}</p>
+                    <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Target Audience</span>
+                    <p className="text-sm text-foreground">{selectedProposal.targetGroup}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Preferred Location</label>
-                    <p className="text-gray-900">{selectedProposal.location}</p>
+                    <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Preferred Location</span>
+                    <p className="text-sm text-foreground">{selectedProposal.location}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Preferred Timing</label>
-                    <p className="text-gray-900">{selectedProposal.preferredTime}</p>
+                    <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Preferred Timing</span>
+                    <p className="text-sm text-foreground">{selectedProposal.preferredTime}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Proposed Date</label>
-                    <p className="text-gray-900">{selectedProposal.proposedDate}</p>
+                    <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Proposed Date</span>
+                    <p className="text-sm text-foreground">{selectedProposal.proposedDate}</p>
                   </div>
                 </div>
 
                 {/* Purpose */}
                 <div>
-                  <h3 className="font-semibold text-lg text-gray-900 mb-2">Purpose & Goals</h3>
-                  <p className="text-gray-700 leading-relaxed">{selectedProposal.purpose}</p>
+                  <h3 className="mb-2 text-lg font-semibold text-foreground">Purpose & Goals</h3>
+                  <p className="leading-relaxed text-muted-foreground">{selectedProposal.purpose}</p>
                 </div>
 
                 {/* Additional Notes */}
                 {selectedProposal.additionalNotes && (
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-900 mb-2">Additional Notes</h3>
-                    <p className="text-gray-700 leading-relaxed">{selectedProposal.additionalNotes}</p>
+                    <h3 className="mb-2 text-lg font-semibold text-foreground">Additional Notes</h3>
+                    <p className="leading-relaxed text-muted-foreground">{selectedProposal.additionalNotes}</p>
                   </div>
                 )}
 
                 {/* Proposer Info */}
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <h3 className="font-semibold text-lg text-gray-900 mb-2">Proposed By</h3>
+                <div className="rounded-2xl bg-muted/40 p-4">
+                  <h3 className="mb-2 text-lg font-semibold text-foreground">Proposed By</h3>
                   <div className="flex items-center space-x-3">
                     <Avatar className="w-10 h-10">
-                      <AvatarFallback className="bg-primary text-white">
+                      <AvatarFallback className="bg-primary/10 text-primary">
                         {getInitials(selectedProposal.proposedBy)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium text-gray-900">{selectedProposal.proposedBy}</p>
-                      <p className="text-sm text-gray-600">{selectedProposal.contactInfo}</p>
-                      <p className="text-xs text-gray-500">Submitted {selectedProposal.proposedDate}</p>
+                      <p className="font-medium text-foreground">{selectedProposal.proposedBy}</p>
+                      <p className="text-sm text-muted-foreground">{selectedProposal.contactInfo}</p>
+                      <p className="text-xs text-muted-foreground">Submitted {selectedProposal.proposedDate}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex justify-end space-x-3 pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsDetailDialogOpen(false)}
-                  >
+                  <Button variant="outline" onClick={() => setIsDetailDialogOpen(false)}>
                     Close
                   </Button>
                   <Button

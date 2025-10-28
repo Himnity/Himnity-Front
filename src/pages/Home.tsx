@@ -669,7 +669,7 @@ const Home = () => {
       </div>
       {/* Comment dialog for proposals */}
       <Dialog open={commentDialog.open} onOpenChange={(open) => setCommentDialog({ open, proposal: open ? commentDialog.proposal : null })}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white text-gray-900 border shadow-lg dark:bg-slate-900 dark:text-slate-100">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto rounded-3xl border border-border/60 bg-card/95 text-card-foreground shadow-xl backdrop-blur supports-[backdrop-filter]:bg-card/85">
           <DialogHeader>
             <DialogTitle className="text-lg">Discussion</DialogTitle>
           </DialogHeader>
@@ -685,7 +685,7 @@ const Home = () => {
                 <div className="space-y-3">
                   {Array.isArray(commentDialog.proposal.comments) && commentDialog.proposal.comments.length > 0 ? (
                     commentDialog.proposal.comments.map((c) => (
-                      <div key={c.id} className="rounded-lg border border-border p-3 bg-white dark:bg-slate-800">
+                      <div key={c.id} className="rounded-2xl border border-border/60 bg-muted/50 p-3">
                         <div className="flex items-center justify-between">
                           <div className="text-sm font-medium">{c.author} <span className="text-xs text-muted-foreground">{c.role}</span></div>
                           <div className="text-xs text-muted-foreground">{c.createdAt}</div>

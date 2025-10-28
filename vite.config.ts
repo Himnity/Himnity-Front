@@ -3,35 +3,24 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-    allowedHosts: [
-      "4e8a3f06dbe4.ngrok-free.app",
-      ".ngrok-free.app"
-    ],
-    cors: {
-      origin: "https://4e8a3f06dbe4.ngrok-free.app",
-      methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-      credentials: true,
-    },
-  },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+export default defineConfig(() => ({
+  plugins: [react(), componentTagger()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  server: {
+    allowedHosts: [
+      "b13d2e5503ed.ngrok-free.app", // 👈 your ngrok host
+    ],
   },
   build: {
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes("node_modules")) {
-            if (id.includes("react-router-dom") || id.includes("react-dom") || id.includes("react")) {
-              return "vendor-react";
-            }
+            if (id.match(/react|react-dom|react-router-dom/)) return "react-vendor";
             if (id.includes("@radix-ui")) return "vendor-radix";
             if (id.includes("lucide-react")) return "vendor-icons";
             if (id.includes("cmdk")) return "vendor-cmdk";

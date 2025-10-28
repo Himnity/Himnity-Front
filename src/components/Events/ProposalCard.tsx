@@ -37,9 +37,20 @@ interface ProposalCardProps {
   onLike?: (proposalId: string) => void;
   onPreRegister?: (proposalId: string) => void;
   onComment?: (proposalId: string) => void;
+  primaryActionLabel?: string;
+  primaryActionActiveLabel?: string;
+  secondaryActionLabel?: string;
 }
 
-export const ProposalCard = ({ proposal, onLike, onPreRegister, onComment }: ProposalCardProps) => {
+export const ProposalCard = ({
+  proposal,
+  onLike,
+  onPreRegister,
+  onComment,
+  primaryActionLabel = "Pre-register",
+  primaryActionActiveLabel = "Pre-registered",
+  secondaryActionLabel = "Comment",
+}: ProposalCardProps) => {
   const [isLiked, setIsLiked] = useState(proposal.isLiked ?? proposal.isUpvoted ?? false);
   const [likeCount, setLikeCount] = useState(proposal.likes ?? proposal.upvotes ?? 0);
 
@@ -197,7 +208,7 @@ export const ProposalCard = ({ proposal, onLike, onPreRegister, onComment }: Pro
             )}
           >
             <ClipboardCheck className="mr-2 h-4 w-4" />
-            {isPreRegistered ? "Pre-registered" : "Pre-register"}
+            {isPreRegistered ? primaryActionActiveLabel : primaryActionLabel}
           </Button>
           <Button
             size="sm"
@@ -206,7 +217,7 @@ export const ProposalCard = ({ proposal, onLike, onPreRegister, onComment }: Pro
             className="border-transparent bg-white/80 text-emerald-800 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 dark:bg-slate-800/60 dark:text-emerald-300"
           >
             <MessageCircle className="mr-2 h-4 w-4" />
-            Comment
+            {secondaryActionLabel}
           </Button>
         </div>
       </div>

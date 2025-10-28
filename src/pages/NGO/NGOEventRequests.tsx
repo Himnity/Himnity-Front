@@ -37,7 +37,7 @@ const eventsData = {
     acceptedCount: 23,
     pendingCount: 12,
     rejectedCount: 3,
-    status: "Active"
+  status: "scheduled"
   },
   "e2": {
     id: "e2",
@@ -49,7 +49,7 @@ const eventsData = {
     acceptedCount: 8,
     pendingCount: 5,
     rejectedCount: 1,
-    status: "Active"
+  status: "scheduled"
   }
 };
 
@@ -207,9 +207,11 @@ const NGOEventRequests = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "accepted": return "bg-green-100 text-green-800 border-green-200";
-      case "rejected": return "bg-red-100 text-red-800 border-red-200";
-      case "pending": return "bg-yellow-100 text-yellow-800 border-yellow-200";
+  case "accepted": return "bg-green-100 text-green-800 border-green-200";
+  case "rejected": return "bg-red-100 text-red-800 border-red-200";
+  case "pending": return "bg-yellow-100 text-yellow-800 border-yellow-200";
+  case "scheduled": return "bg-amber-100 text-amber-900 border-amber-200";
+  case "live": return "bg-emerald-600 text-white";
       default: return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
@@ -218,14 +220,18 @@ const NGOEventRequests = () => {
     switch (status) {
       case "accepted": return <CheckCircle className="h-3 w-3" />;
       case "rejected": return <X className="h-3 w-3" />;
-      case "pending": return <Clock className="h-3 w-3" />;
+      case "pending":
+      case "scheduled":
+        return <Clock className="h-3 w-3" />;
+      case "live":
+        return <CheckCircle className="h-3 w-3" />;
       default: return null;
     }
   };
 
   return (
     <NGOLayout title="Join Requests">
-      <div className="space-y-4 p-4">
+      <div className="container space-y-6 px-4 py-6 md:px-0">
         {/* Back Button and Header */}
         <div className="flex items-center space-x-3">
           <Button 
@@ -488,21 +494,23 @@ const NGOEventRequests = () => {
 
         {/* Request Detail Dialog */}
         <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
-          <DialogContent className="max-w-2xl bg-white text-gray-900">
+          <DialogContent className="max-w-2xl rounded-3xl border border-border/60 bg-card/95 text-card-foreground shadow-xl backdrop-blur supports-[backdrop-filter]:bg-card/85">
             <DialogHeader>
-              <DialogTitle className="text-gray-900">Request Details</DialogTitle>
+              <DialogTitle className="text-lg text-foreground">Request Details</DialogTitle>
             </DialogHeader>
             {selectedRequest && (
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-16 w-16">
                     <AvatarImage src={selectedRequest.user.avatar} alt={selectedRequest.user.name} />
-                    <AvatarFallback className="text-lg">{selectedRequest.user.name.split(' ').map((n: string) => n[0]).join('')}</AvatarFallback>
+                    <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
+                      {selectedRequest.user.name.split(' ').map((n: string) => n[0]).join('')}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{selectedRequest.user.name}</h3>
-                    <p className="text-gray-600">{selectedRequest.user.email}</p>
-                    <div className="flex items-center space-x-3 text-sm text-gray-500">
+                    <h3 className="text-lg font-semibold text-foreground">{selectedRequest.user.name}</h3>
+                    <p className="text-sm text-muted-foreground">{selectedRequest.user.email}</p>
+                    <div className="flex items-center space-x-3 text-xs text-muted-foreground">
                       <span>{selectedRequest.user.joinedEvents} events joined</span>
                       <span>★ {selectedRequest.user.rating} rating</span>
                     </div>
@@ -510,17 +518,17 @@ const NGOEventRequests = () => {
                 </div>
 
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">Message</h4>
-                  <p className="text-gray-600 bg-gray-50 p-3 rounded-lg italic">
+                  <h4 className="mb-2 text-sm font-semibold text-foreground">Message</h4>
+                  <p className="rounded-2xl bg-muted/40 p-3 text-sm italic text-muted-foreground">
                     "{selectedRequest.message}"
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">Skills & Experience</h4>
+                  <h4 className="mb-2 text-sm font-semibold text-foreground">Skills & Experience</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedRequest.skills.map((skill: string, index: number) => (
-                      <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800">
+                      <Badge key={index} variant="secondary" className="bg-primary/10 text-primary">
                         {skill}
                       </Badge>
                     ))}
@@ -528,24 +536,24 @@ const NGOEventRequests = () => {
                 </div>
 
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-1">Availability</h4>
-                  <p className="text-gray-600">{selectedRequest.availability}</p>
+                  <h4 className="mb-1 text-sm font-semibold text-foreground">Availability</h4>
+                  <p className="text-sm text-muted-foreground">{selectedRequest.availability}</p>
                 </div>
 
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-1">Request Date</h4>
-                  <p className="text-gray-600">{selectedRequest.requestDate}</p>
+                  <h4 className="mb-1 text-sm font-semibold text-foreground">Request Date</h4>
+                  <p className="text-sm text-muted-foreground">{selectedRequest.requestDate}</p>
                 </div>
 
                 {selectedRequest.status === "pending" && (
-                  <div className="flex space-x-2 pt-4 border-t border-gray-200">
+                  <div className="flex space-x-2 border-t border-border pt-4">
                     <Button
                       onClick={() => {
                         handleRejectRequest(selectedRequest.id);
                         setSelectedRequest(null);
                       }}
                       variant="outline"
-                      className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
+                      className="flex-1 border-destructive/40 text-destructive hover:bg-destructive/10"
                     >
                       <X className="h-4 w-4 mr-2" />
                       Reject Request
@@ -555,7 +563,7 @@ const NGOEventRequests = () => {
                         handleAcceptRequest(selectedRequest.id);
                         setSelectedRequest(null);
                       }}
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                      className="flex-1 gradient-primary"
                     >
                       <Check className="h-4 w-4 mr-2" />
                       Accept Request
