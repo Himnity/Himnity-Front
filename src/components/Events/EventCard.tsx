@@ -1,10 +1,12 @@
-import { MouseEvent } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tag } from "@/components/ui/tag";
-import { Calendar, MapPin, Users, Star, Heart, Share2 } from "lucide-react";
-import communityEventImage from "@/assets/community-event.jpg";
+import { Calendar, MapPin, Users, Star, Heart, Share2, ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { buildOrganizerProfilePath } from "@/lib/utils";
+import defaultEventImage from "@/assets/hero-civic-community.jpg";
 
 interface EventCardProps {
   event: {
@@ -34,6 +36,15 @@ interface EventCardProps {
 }
 
 export const EventCard = ({ event, onJoin, onEventClick, onShare, onToggleLike }: EventCardProps) => {
+  const [isLiked, setIsLiked] = useState(event.isLiked ?? false);
+  const [likesCount, setLikesCount] = useState(event.likes ?? 0);
+  const organizerProfilePath = buildOrganizerProfilePath(event.organizer);
+
+  useEffect(() => {
+    setIsLiked(event.isLiked ?? false);
+    setLikesCount(event.likes ?? 0);
+  }, [event.id, event.isLiked, event.likes]);
+
   const handleJoinClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (onJoin) onJoin(event.id);
@@ -44,8 +55,14 @@ export const EventCard = ({ event, onJoin, onEventClick, onShare, onToggleLike }
     if (onShare) onShare(event);
   };
 
-  const handleLikeClick = (e: MouseEvent) => {
+  const handleLikeClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    const nextLiked = !isLiked;
+    setIsLiked(nextLiked);
+    setLikesCount((current) => {
+      const next = (current ?? 0) + (nextLiked ? 1 : -1);
+      return next < 0 ? 0 : next;
+    });
     if (onToggleLike) onToggleLike(event.id);
   };
 
@@ -60,7 +77,7 @@ export const EventCard = ({ event, onJoin, onEventClick, onShare, onToggleLike }
     >
       <div className="relative h-48 overflow-hidden">
         <img
-          src={event.imageUrl || communityEventImage}
+          src={event.imageUrl || defaultEventImage}
           alt={event.title}
           className="w-full h-full object-cover"
           loading="lazy"
@@ -71,7 +88,7 @@ export const EventCard = ({ event, onJoin, onEventClick, onShare, onToggleLike }
             {event.category}
           </Badge>
         </div>
-        <div className="absolute top-3 right-3 flex items-center space-x-1 bg-accent/90 text-white px-2 py-1 rounded-full">
+        <div className="absolute top-3 right-3 flex items-center space-x-1 rounded-full bg-accent/90 px-2 py-1 text-white">
           <Star className="h-3 w-3" />
           <span className="text-xs font-medium">{event.rewardPoints} XP</span>
         </div>
@@ -83,7 +100,17 @@ export const EventCard = ({ event, onJoin, onEventClick, onShare, onToggleLike }
             <h3 className="font-heading font-semibold text-foreground text-lg leading-snug line-clamp-2">
               {event.title}
             </h3>
-            <p className="text-sm text-muted-foreground">Hosted by {event.organizer}</p>
+            <p className="text-sm text-muted-foreground">
+              Hosted by{" "}
+              <Link
+                to={organizerProfilePath}
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+              >
+                {event.organizer}
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
+            </p>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
             {event.description}
@@ -112,46 +139,38 @@ export const EventCard = ({ event, onJoin, onEventClick, onShare, onToggleLike }
         )}
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground sm:text-sm">
             <span className="inline-flex items-center gap-1">
               <Users className="h-4 w-4 text-primary" />
               {event.participants}/{event.maxParticipants}
             </span>
-            {typeof event.likes === "number" && (
-              onToggleLike ? (
-                <span className="inline-flex items-center gap-2 text-sm">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-pressed={event.isLiked}
-                    onClick={handleLikeClick}
-                    className={`h-8 w-8 rounded-full transition-colors ${
-                      event.isLiked ? "text-rose-500 hover:text-rose-600" : "text-muted-foreground hover:text-rose-500"
-                    }`}
-                  >
-                    <Heart
-                      className="h-5 w-5"
-                      fill={event.isLiked ? "currentColor" : "none"}
-                    />
-                    <span className="sr-only">{event.isLiked ? "Remove like" : "Like event"}</span>
-                  </Button>
-                  <span className="text-sm text-muted-foreground">{event.likes}</span>
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1">
-                  <Heart className="h-4 w-4 text-rose-500" />
-                  {event.likes}
-                </span>
-              )
+            {(typeof event.likes === "number" || typeof onToggleLike === "function") && (
+              <span className="inline-flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-pressed={isLiked}
+                  aria-label={isLiked ? "Remove like" : "Like event"}
+                  onClick={handleLikeClick}
+                  className={`h-7 w-7 rounded-full transition-colors sm:h-8 sm:w-8 ${
+                    isLiked
+                      ? "text-rose-500 hover:text-rose-600"
+                      : "text-muted-foreground hover:text-rose-500"
+                  }`}
+                >
+                  <Heart className="h-5 w-5" fill={isLiked ? "currentColor" : "none"} />
+                </Button>
+                <span className="text-xs text-muted-foreground sm:text-sm">{likesCount}</span>
+              </span>
             )}
             {typeof event.shares === "number" && (
-              <span className="inline-flex items-center gap-1">
+              <span className="inline-flex items-center gap-1 text-xs sm:text-sm">
                 <Share2 className="h-4 w-4 text-primary" />
-                {event.shares}
+                <span>{event.shares}</span>
               </span>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex w-full items-center gap-2 sm:w-auto">
             <Button
               onClick={handleShareClick}
               variant="outline"

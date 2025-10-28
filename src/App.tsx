@@ -23,6 +23,7 @@ const NGOCreateEvent = lazy(() => import("./pages/NGO/NGOCreateEvent"));
 const NGOAttendees = lazy(() => import("./pages/NGO/NGOAttendees"));
 const NGOEventRequests = lazy(() => import("./pages/NGO/NGOEventRequests"));
 const NGOProfile = lazy(() => import("./pages/NGO/NGOProfile"));
+const NGOPublicProfile = lazy(() => import("./pages/NGO/NGOPublicProfile"));
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const App = () => (
               <Route path="/ngo/events/:id/attendees" element={<NGOAttendees />} />
               <Route path="/ngo/events/:id/requests" element={<NGOEventRequests />} />
               <Route path="/ngo/profile" element={<NGOProfile />} />
+              <Route path="/ngo/:slug" element={<NGOPublicProfile />} />
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

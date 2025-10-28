@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import { BottomNavigation } from "./BottomNavigation";
-import { Search, Bell, LogOut, User } from "lucide-react";
+import { NotificationsDropdown } from "./NotificationsDropdown";
+import { Search, LogOut, User } from "lucide-react";
+import { useNavHistory } from "@/hooks/useNavHistory";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { Button } from "@/components/ui/button";
@@ -23,6 +25,8 @@ interface AppLayoutProps {
 }
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
+  useNavHistory();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -41,10 +45,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
             <Button variant="ghost" size="icon" aria-label="Search">
               <Search className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full text-xs"></span>
-            </Button>
+            <NotificationsDropdown />
 
             {/* User menu: profile + logout */}
             <DropdownMenu>

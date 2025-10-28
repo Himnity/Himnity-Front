@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -38,7 +40,21 @@ interface ProposalCardProps {
 }
 
 export const ProposalCard = ({ proposal, onLike, onPreRegister, onComment }: ProposalCardProps) => {
+  const [isLiked, setIsLiked] = useState(proposal.isLiked ?? proposal.isUpvoted ?? false);
+  const [likeCount, setLikeCount] = useState(proposal.likes ?? proposal.upvotes ?? 0);
+
+  useEffect(() => {
+    setIsLiked(proposal.isLiked ?? proposal.isUpvoted ?? false);
+    setLikeCount(proposal.likes ?? proposal.upvotes ?? 0);
+  }, [proposal.id, proposal.isLiked, proposal.isUpvoted, proposal.likes, proposal.upvotes]);
+
   const handleLike = () => {
+    const nextLiked = !isLiked;
+    setIsLiked(nextLiked);
+    setLikeCount((current) => {
+      const next = (current ?? 0) + (nextLiked ? 1 : -1);
+      return next < 0 ? 0 : next;
+    });
     if (onLike) onLike(proposal.id);
   };
 
@@ -60,8 +76,6 @@ export const ProposalCard = ({ proposal, onLike, onPreRegister, onComment }: Pro
 
   const preRegistrationCount = proposal.preRegistrations ?? proposal.supports ?? 0;
   const commentCount = Array.isArray(proposal.comments) ? proposal.comments.length : proposal.comments ?? 0;
-  const likeCount = proposal.likes ?? proposal.upvotes ?? 0;
-  const isLiked = proposal.isLiked ?? proposal.isUpvoted ?? false;
   const isPreRegistered = proposal.isPreRegistered ?? false;
   const statusTone = (() => {
     const normalized = proposal.status?.toLowerCase();
@@ -82,6 +96,24 @@ export const ProposalCard = ({ proposal, onLike, onPreRegister, onComment }: Pro
 
   return (
     <Card className="relative overflow-hidden rounded-3xl border border-amber-200 bg-[#FDF8E5] p-5 shadow-sm dark:bg-slate-800 dark:border-slate-700">
+      <div className="absolute top-4 right-4 flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-sm font-medium text-rose-500 shadow-sm transition dark:bg-slate-800/80 dark:text-rose-300">
+        <Button
+          size="icon"
+          variant="ghost"
+          aria-pressed={isLiked}
+          aria-label={isLiked ? "Withdraw support" : "Support proposal"}
+          onClick={handleLike}
+          className={cn(
+            "h-8 w-8 rounded-full transition hover:bg-rose-50 dark:hover:bg-rose-200/10",
+            isLiked
+              ? "text-rose-600 hover:bg-rose-100 dark:text-rose-200"
+              : "text-rose-500 hover:text-rose-600 dark:text-rose-300"
+          )}
+        >
+          <Heart className="h-4 w-4" fill={isLiked ? "currentColor" : "none"} />
+        </Button>
+        <span className="text-xs font-semibold text-rose-600 dark:text-rose-200">{likeCount}</span>
+      </div>
       <div className="flex items-start gap-4">
         <Avatar className="h-12 w-12 border border-amber-200">
           {proposal.avatarUrl ? (
@@ -143,46 +175,40 @@ export const ProposalCard = ({ proposal, onLike, onPreRegister, onComment }: Pro
         </div>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-amber-200 pt-4">
-        <Button
-          size="sm"
-          onClick={handlePreRegister}
-          aria-pressed={isPreRegistered}
-          className={cn(
-            "bg-[#4CAF50] text-white shadow-sm transition hover:bg-[#449a48]",
-            isPreRegistered && "bg-emerald-600 hover:bg-emerald-500"
-          )}
-        >
-          <ClipboardCheck className="mr-2 h-4 w-4" />
-          {isPreRegistered ? "Pre-registered" : "Pre-register"}
-          {preRegistrationCount > 0 && ` (${preRegistrationCount})`}
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => onComment?.(proposal.id)}
-          className="border-transparent bg-white/80 text-emerald-800 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 dark:bg-slate-800/60 dark:text-emerald-300"
-        >
-          <MessageCircle className="mr-2 h-4 w-4" />
-          Comment {commentCount > 0 && `(${commentCount})`}
-        </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={handleLike}
-          aria-pressed={isLiked}
-          className={cn(
-            "ml-auto gap-2 rounded-full border border-transparent px-3 py-2 text-sm font-medium text-rose-500 transition hover:bg-rose-50",
-            isLiked && "bg-rose-100 text-rose-600 hover:bg-rose-100"
-          )}
-        >
-          <Heart
-            className="h-4 w-4"
-            fill={isLiked ? "currentColor" : "none"}
-          />
-          <span>{isLiked ? "Supported" : "Support"}</span>
-          {likeCount > 0 && <span className="text-xs text-muted-foreground">({likeCount})</span>}
-        </Button>
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-amber-200 pt-4">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground sm:text-sm">
+          <span className="inline-flex items-center gap-1">
+            <ClipboardCheck className="h-4 w-4 text-emerald-500" />
+            <span>{preRegistrationCount} pre-registrations</span>
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <MessageCircle className="h-4 w-4 text-emerald-500" />
+            <span>{commentCount} comments</span>
+          </span>
+        </div>
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <Button
+            size="sm"
+            onClick={handlePreRegister}
+            aria-pressed={isPreRegistered}
+            className={cn(
+              "bg-[#4CAF50] text-white shadow-sm transition hover:bg-[#449a48]",
+              isPreRegistered && "bg-emerald-600 hover:bg-emerald-500"
+            )}
+          >
+            <ClipboardCheck className="mr-2 h-4 w-4" />
+            {isPreRegistered ? "Pre-registered" : "Pre-register"}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onComment?.(proposal.id)}
+            className="border-transparent bg-white/80 text-emerald-800 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 dark:bg-slate-800/60 dark:text-emerald-300"
+          >
+            <MessageCircle className="mr-2 h-4 w-4" />
+            Comment
+          </Button>
+        </div>
       </div>
     </Card>
   );

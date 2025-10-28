@@ -11,21 +11,26 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  Calendar, 
-  MapPin, 
-  Users, 
-  Star, 
-  Clock, 
+import {
+  Calendar,
+  MapPin,
+  Users,
+  Star,
+  Clock,
   Phone,
   Mail,
   Award,
   Heart,
-  Share2
+  Share2,
+  ArrowUpRight,
+  ArrowLeft
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import communityEventImage from "@/assets/community-event.jpg";
+import communityEventImage from "@/assets/community-gardens.jpeg";
+import { Link, useNavigate } from "react-router-dom";
+import { buildOrganizerProfilePath } from "@/lib/utils";
+import { getLastMainRoute, getPreviousMainRoute } from "@/hooks/useNavHistory";
 
 // Mock event data - in real app, this would come from router params or API
 const eventData = {
@@ -60,6 +65,7 @@ The garden will be maintained by community volunteers and the fresh produce will
   maxParticipants: 50,
   rewardPoints: 250,
   imageUrl: communityEventImage,
+  likes: 186,
   tags: [
     { label: "Physical Activity", variant: "activity" as const },
     { label: "Outdoors", variant: "location" as const },
@@ -80,7 +86,16 @@ The garden will be maintained by community volunteers and the fresh produce will
 };
 
 const EventDetails = () => {
+  const navigate = useNavigate();
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [eventLikes, setEventLikes] = useState({
+    count: eventData.likes,
+    isLiked: false,
+  });
+  const organizerProfilePath = buildOrganizerProfilePath(eventData.organizer.name);
+  const previousMainRoute = getPreviousMainRoute();
+  const lastMainRoute = getLastMainRoute();
+  const fallbackRoute = previousMainRoute ?? lastMainRoute ?? "/events";
   const [signupForm, setSignupForm] = useState({
     fullName: "",
     email: "",
@@ -94,6 +109,24 @@ const EventDetails = () => {
 
   const handleJoinEvent = () => {
     setIsSignupModalOpen(true);
+  };
+
+  const handleToggleLike = () => {
+    setEventLikes((prev) => {
+      const nextLiked = !prev.isLiked;
+      const nextCount = nextLiked ? prev.count + 1 : Math.max(0, prev.count - 1);
+      return { count: nextCount, isLiked: nextLiked };
+    });
+  };
+
+  const handleContactNGO = () => {
+    toast.info("We'll connect you with the organizer", {
+      description: "A dedicated contact channel is coming soon.",
+    });
+  };
+
+  const handleBackClick = () => {
+    navigate(fallbackRoute);
   };
 
   const handleSubmitSignup = (e: React.FormEvent) => {
@@ -118,6 +151,18 @@ const EventDetails = () => {
   return (
     <AppLayout title="Event Details">
       <div className="space-y-6">
+        <div className="fixed left-4 top-24 z-50">
+          <Button
+            variant="secondary"
+            size="icon"
+            onClick={handleBackClick}
+            className="h-10 w-10 rounded-full border border-border bg-background/90 text-muted-foreground shadow-lg transition hover:bg-background hover:text-primary"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        </div>
+
         {/* Event Hero Image */}
         <div className="relative h-64 overflow-hidden">
           <img 
@@ -136,11 +181,74 @@ const EventDetails = () => {
                 <span className="text-xs font-medium">{eventData.rewardPoints} XP</span>
               </div>
             </div>
-            <h1 className="text-2xl font-heading font-bold">{eventData.title}</h1>
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-2xl font-heading font-bold">{eventData.title}</h1>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={handleToggleLike}
+                aria-pressed={eventLikes.isLiked}
+                aria-label={eventLikes.isLiked ? "Remove like" : "Like this event"}
+                className={`flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-sm font-medium text-rose-600 shadow-sm transition hover:bg-white/80 ${
+                  eventLikes.isLiked ? "ring-1 ring-rose-500" : ""
+                }`}
+              >
+                <Heart className="h-4 w-4" fill={eventLikes.isLiked ? "currentColor" : "none"} />
+                {eventLikes.count}
+              </Button>
+            </div>
           </div>
         </div>
 
         <div className="p-4 space-y-6">
+          {/* Organizer Spotlight */}
+          <Card className="card-civic flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-4">
+              <Avatar className="h-14 w-14">
+                <AvatarFallback className="bg-primary text-white font-medium text-lg">
+                  {eventData.organizer.avatar}
+                </AvatarFallback>
+              </Avatar>
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link
+                    to={organizerProfilePath}
+                    className="inline-flex items-center gap-1 text-lg font-semibold text-primary hover:underline"
+                  >
+                    {eventData.organizer.name}
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                  <Badge variant="secondary">Verified NGO</Badge>
+                </div>
+                <p className="max-w-xl text-sm text-muted-foreground">
+                  {eventData.organizer.description}
+                </p>
+                <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <Star className="h-3.5 w-3.5 text-amber-500" />
+                    {eventData.organizer.rating} impact rating
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <Award className="h-3.5 w-3.5 text-primary" />
+                    {eventData.organizer.eventsOrganized} successful events
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="flex w-full gap-2 md:w-auto">
+              <Button asChild variant="outline" className="flex-1 md:flex-none">
+                <Link to={organizerProfilePath} className="inline-flex items-center gap-2">
+                  Visit profile
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button variant="secondary" className="flex-1 md:flex-none" onClick={handleContactNGO}>
+                <Mail className="mr-2 h-4 w-4" />
+                Contact NGO
+              </Button>
+            </div>
+          </Card>
+
           {/* Quick Info Cards */}
           <div className="grid grid-cols-2 gap-4">
             <Card className="p-4 card-civic">
@@ -266,34 +374,6 @@ const EventDetails = () => {
                 </li>
               ))}
             </ul>
-          </Card>
-
-          {/* Organizer Info */}
-          <Card className="p-6 card-civic">
-            <h3 className="font-semibold mb-4">Organized by</h3>
-            <div className="flex items-start space-x-4">
-              <Avatar className="w-12 h-12">
-                <AvatarFallback className="bg-primary text-white font-medium">
-                  {eventData.organizer.avatar}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="font-medium">{eventData.organizer.name}</div>
-                <div className="text-sm text-muted-foreground mb-2">
-                  {eventData.organizer.description}
-                </div>
-                <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-                  <div className="flex items-center space-x-1">
-                    <Star className="h-3 w-3 fill-current text-accent" />
-                    <span>{eventData.organizer.rating} rating</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Award className="h-3 w-3" />
-                    <span>{eventData.organizer.eventsOrganized} events organized</span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </Card>
 
           {/* Action Buttons */}

@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import civicBadgesImage from "@/assets/civic-badges.jpg";
+import civicBadgesImage from "@/assets/communityCodingNight.jpeg";
 
 interface BadgeData {
   id: string;

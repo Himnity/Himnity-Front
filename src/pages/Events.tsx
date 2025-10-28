@@ -20,6 +20,10 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
+import communityGardenImage from "@/assets/community-gardens.jpeg";
+import digitalLiteracyWorkshopImage from "@/assets/DigitalLiteracyWorkshop.jpg";
+import neighborhoodCleanupImage from "@/assets/clean-up-party.jpg";
+
 const initialUpcomingEvents = [
   {
     id: "1",
@@ -35,6 +39,7 @@ const initialUpcomingEvents = [
     likes: 86,
     shares: 24,
     isLiked: false,
+    imageUrl: communityGardenImage,
     tags: [
       { label: "Physical Activity", variant: "activity" as const },
       { label: "Outdoors", variant: "location" as const },
@@ -55,6 +60,7 @@ const initialUpcomingEvents = [
     likes: 42,
     shares: 11,
     isLiked: false,
+    imageUrl: digitalLiteracyWorkshopImage,
     tags: [
       { label: "Teaching", variant: "activity" as const },
       { label: "Indoors", variant: "location" as const },
@@ -75,6 +81,7 @@ const initialUpcomingEvents = [
     likes: 58,
     shares: 19,
     isLiked: false,
+    imageUrl: neighborhoodCleanupImage,
     tags: [
       { label: "Physical Activity", variant: "activity" as const },
       { label: "Outdoors", variant: "location" as const },

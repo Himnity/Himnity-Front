@@ -12,6 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import beachCleanupImage from "@/assets/beachCleanup.jpg";
+import communityCodingNightImage from "@/assets/communityCodingNight.jpeg";
+import communityGardenImage from "@/assets/community-gardens.jpeg";
+import digitalLiteracyImage from "@/assets/DigitalLiteracyWorkshop.jpg";
+import foodForFamiliesImage from "@/assets/food4fams.jpg";
+import greenCommuteImage from "@/assets/Green Commute Challenge.webp";
 
 const SectionDivider = ({ label, subtitle }: { label: string; subtitle?: string }) => (
   <div className="space-y-2 text-center">
@@ -38,11 +44,13 @@ const initialEvents = [
     rewardPoints: 250,
     likes: 86,
     shares: 24,
+    isLiked: false,
     tags: [
       { label: "Physical Activity", variant: "activity" as const },
       { label: "Outdoors", variant: "location" as const },
       { label: "Gardening", variant: "skill" as const }
-    ]
+    ],
+    imageUrl: communityGardenImage
   },
   {
     id: "2",
@@ -57,11 +65,13 @@ const initialEvents = [
     rewardPoints: 150,
     likes: 42,
     shares: 11,
+    isLiked: false,
     tags: [
       { label: "Teaching", variant: "activity" as const },
       { label: "Indoors", variant: "location" as const },
       { label: "Technology", variant: "skill" as const }
-    ]
+    ],
+    imageUrl: digitalLiteracyImage
   },
   {
     id: "3",
@@ -76,10 +86,12 @@ const initialEvents = [
     rewardPoints: 320,
     likes: 133,
     shares: 39,
+    isLiked: false,
     tags: [
       { label: "Outdoors", variant: "location" as const },
       { label: "Waste Reduction", variant: "skill" as const }
-    ]
+    ],
+    imageUrl: beachCleanupImage
   },
   {
     id: "4",
@@ -94,11 +106,13 @@ const initialEvents = [
     rewardPoints: 210,
     likes: 58,
     shares: 17,
+    isLiked: false,
     tags: [
       { label: "Mentorship", variant: "activity" as const },
       { label: "Indoors", variant: "location" as const },
       { label: "Coding", variant: "skill" as const }
-    ]
+    ],
+    imageUrl: communityCodingNightImage
   },
   {
     id: "5",
@@ -113,10 +127,12 @@ const initialEvents = [
     rewardPoints: 280,
     likes: 104,
     shares: 33,
+    isLiked: false,
     tags: [
       { label: "Food Relief", variant: "skill" as const },
       { label: "Community", variant: "activity" as const }
-    ]
+    ],
+    imageUrl: foodForFamiliesImage
   },
   {
     id: "6",
@@ -131,11 +147,13 @@ const initialEvents = [
     rewardPoints: 340,
     likes: 119,
     shares: 41,
+    isLiked: false,
     tags: [
       { label: "Cycling", variant: "activity" as const },
       { label: "Outdoors", variant: "location" as const },
       { label: "Mobility", variant: "skill" as const }
-    ]
+    ],
+    imageUrl: greenCommuteImage
   }
 ];
 
@@ -291,6 +309,18 @@ const Home = () => {
 
   const handleEventClick = (eventId: string) => {
     navigate(`/event/${eventId}`);
+  };
+
+  const handleToggleLikeEvent = (eventId: string) => {
+    setEvents((previous) =>
+      previous.map((event) => {
+        if (event.id !== eventId) return event;
+        const alreadyLiked = event.isLiked ?? false;
+        const baseLikes = event.likes ?? 0;
+        const nextLikes = alreadyLiked ? Math.max(0, baseLikes - 1) : baseLikes + 1;
+        return { ...event, likes: nextLikes, isLiked: !alreadyLiked };
+      })
+    );
   };
 
   const handleProposeIdea = () => {
@@ -577,6 +607,7 @@ const Home = () => {
                       onJoin={handleJoinEvent}
                       onEventClick={handleEventClick}
                       onShare={handleShareEvent}
+                      onToggleLike={handleToggleLikeEvent}
                     />
                   ))}
                 </div>
@@ -618,6 +649,7 @@ const Home = () => {
                         onJoin={handleJoinEvent}
                         onEventClick={handleEventClick}
                         onShare={handleShareEvent}
+                        onToggleLike={handleToggleLikeEvent}
                       />
                     ) : (
                       <ProposalCard
