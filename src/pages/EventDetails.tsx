@@ -156,7 +156,7 @@ const EventDetails = () => {
             variant="secondary"
             size="icon"
             onClick={handleBackClick}
-            className="h-10 w-10 rounded-full border border-border bg-background/90 text-muted-foreground shadow-lg transition hover:bg-background hover:text-primary"
+            className="h-11 w-11 rounded-full border border-border/60 bg-card/90 text-foreground shadow-xl backdrop-blur-sm transition hover:-translate-x-0.5 hover:text-primary hover:shadow-2xl"
             aria-label="Go back"
           >
             <ArrowLeft className="h-5 w-5" />
